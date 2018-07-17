@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB.csproj" />
+    <ProjectReference Include="..\..\src\TheFlow\TheFlow.csproj" />
+  </ItemGroup>
+
+</Project>

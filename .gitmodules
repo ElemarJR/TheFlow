@@ -1,0 +1,3 @@
+[submodule "external/HealthChecks"]
+	path = external/HealthChecks
+	url = https://github.com/dotnet-architecture/HealthChecks.git

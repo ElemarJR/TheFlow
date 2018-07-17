@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>B</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
+    <PackageReference Include="FluentValidation" Version="7.6.103" />
+    <PackageReference Include="MediatR" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    <PackageReference Include="RavenDB.Client" Version="4.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB.csproj" />
+    <ProjectReference Include="..\..\..\src\TheFlow\TheFlow.csproj" />
+  </ItemGroup>
+</Project>
