@@ -2,7 +2,7 @@ version: 0.0.{build}
 image: Visual Studio 2017
 environment:
   COVERALLS_REPO_TOKEN:
-    secure: IH701nZFq4lOXWidio2lJJkq9QEs2DH6uCTPN+9CF91jfb6/f+9s+0Hob2F4BTc6
+    secure: EpNdzj3IQUSrXiz0O1EGjAwPV5AhZJy1XovtymuCMqIYbj3ziJAY1OcjRwfkt5DG
 install:
   - git submodule update --init --recursive
   - nuget restore TheFlow.sln
