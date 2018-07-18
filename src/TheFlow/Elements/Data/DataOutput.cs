@@ -16,7 +16,7 @@ namespace TheFlow.Elements.Data
         
         
         List<Action<T>> _subscriptions = new List<Action<T>>();
-        public void Subscribe(Action<T> action)
+        internal void Subscribe(Action<T> action)
         {
             _subscriptions.Add(action);
         }

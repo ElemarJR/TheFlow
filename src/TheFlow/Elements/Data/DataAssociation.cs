@@ -13,6 +13,7 @@ namespace TheFlow.Elements.Data
         {
             Input = input;
             Output = output;
+            output.Subscribe((data) => Input.Update(data));
         }
 
         // TODO: Incompatible types?
