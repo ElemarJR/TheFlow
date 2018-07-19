@@ -1,6 +1,5 @@
 ﻿using System;
 using TheFlow.CoreConcepts;
-using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Activities
 {
@@ -10,7 +9,7 @@ namespace TheFlow.Elements.Activities
 
         private LambdaActivity(Action<IServiceProvider> action)
         {
-            Action = action;
+            Action = action ?? throw new ArgumentNullException(nameof(action));
         }
        
         public static LambdaActivity Create(
