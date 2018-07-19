@@ -1,3 +1,5 @@
+using System;
+
 namespace TheFlow.Elements.Data
 {
     public class DataAssociation<T>
@@ -5,14 +7,13 @@ namespace TheFlow.Elements.Data
         public DataInput<T> Input { get; }
         public DataOutput<T> Output { get; }
         
-        // TODO: Null?
         private DataAssociation(
             DataInput<T> input,
             DataOutput<T> output
             )
         {
-            Input = input;
-            Output = output;
+            Input = input ?? throw new ArgumentNullException(nameof(input));
+            Output = output ?? throw new ArgumentNullException(nameof(output));
             output.Subscribe((data) => Input.Update(data));
         }
 

@@ -13,6 +13,11 @@ namespace TheFlow.Tests.Functional
 {
     public class UsingDataInputs
     {
+        [Fact]
+        public void UsingDataReceivedInStartEventInTheFollowingAction()
+        {
+
+        }
         //[Theory]
         //public void UsingDataReceivedInStartEventInTheFollowingAction()
         //{
