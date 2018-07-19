@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json.Bson;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements;
+using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
 using Xunit;
 
@@ -57,6 +59,19 @@ namespace TheFlow.Tests.Unit
 
             var catchers = processModel.GetStartEventCatchers();
             Assert.Single(catchers);
+        }
+
+        [Fact]
+        public void ThrowArgumentWhenInsertingElementWithDuplicatedName()
+        {
+            Action act = () =>
+            {
+                var processModel = ProcessModel.Create()
+                    .AddActivity("act1", LambdaActivity.Create(() => { }))
+                    .AddActivity("act1", LambdaActivity.Create(() => { }));
+            };
+
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]

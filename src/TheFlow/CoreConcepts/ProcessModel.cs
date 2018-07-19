@@ -24,6 +24,10 @@ namespace TheFlow.CoreConcepts
             int version,
             ImmutableList<IProcessElement<IElement>> elements)
         {
+            if (elements.HasDuplicatedNames())
+            {
+                throw new ArgumentException("There are elements using a same name.");
+            }
             Id = id;
             Version = version;
             Elements = elements;
@@ -39,7 +43,7 @@ namespace TheFlow.CoreConcepts
             => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
         
         public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher) 
-            => new ProcessModel(Id.ToString(), Version + 1, Elements.Add(catcher));
+            => new ProcessModel(Id, Version + 1, Elements.Add(catcher));
 
        
         public ProcessModel AddEventThrower(string name, IEventThrower thrower)

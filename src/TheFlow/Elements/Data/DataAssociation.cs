@@ -17,7 +17,6 @@ namespace TheFlow.Elements.Data
             output.Subscribe((data) => Input.Update(data));
         }
 
-        // TODO: Incompatible types?
         public static DataAssociation<T> Create(
             DataInput<T> input,
             DataOutput<T> output
