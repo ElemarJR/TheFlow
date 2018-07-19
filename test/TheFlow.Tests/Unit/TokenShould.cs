@@ -115,6 +115,19 @@ namespace TheFlow.Tests.Unit
         }
 
         [Fact]
+        public void ReturnEmptyEnumerationOfActiveDescendatsWhenTokenIsInactive()
+        {
+            var token = Token.Create();
+            var child1 = token.AllocateChild();
+            var child2 = token.AllocateChild();
+            var granchild = child1.AllocateChild();
+
+            token.Release();
+
+            token.GetActiveDescendants().Should().BeEmpty();
+        }
+
+        [Fact]
         public void ReturnNullFindingAnInexistentId()
         {
             var token = Token.Create();

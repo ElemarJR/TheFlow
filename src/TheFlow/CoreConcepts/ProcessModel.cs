@@ -15,7 +15,6 @@ namespace TheFlow.CoreConcepts
         public string Id { get; }
         public int Version { get; }
         
-        // TODO: Duplicated Names?
         public ImmutableList<IProcessElement<IElement>> Elements { get; }
 
         #region Constructor and Empty Object
