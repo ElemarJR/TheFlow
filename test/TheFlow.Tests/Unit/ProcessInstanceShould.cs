@@ -241,9 +241,9 @@ namespace TheFlow.Tests.Unit
         public void RespectEventTypes()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", TypedEventCatcher<Start>.Instance)
-                .AddEventCatcher("middle1", TypedEventCatcher<Middle1>.Instance)
-                .AddEventCatcher("middle2", TypedEventCatcher<Middle2>.Instance)
+                .AddEventCatcher("start", TypedEventCatcher<Start>.Create())
+                .AddEventCatcher("middle1", TypedEventCatcher<Middle1>.Create())
+                .AddEventCatcher("middle2", TypedEventCatcher<Middle2>.Create())
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "middle1", "middle2", "end");
 

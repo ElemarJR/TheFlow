@@ -14,7 +14,7 @@ namespace TheFlow.Tests.Unit
         public void CreateInstancesOnlyWhenApplicable()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", TypedEventCatcher<Start>.Instance)
+                .AddEventCatcher("start", TypedEventCatcher<Start>.Create())
                 .AddEventCatcher("middle", CatchAnyEventCatcher.Create())
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "middle", "end");

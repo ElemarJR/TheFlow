@@ -35,7 +35,10 @@ namespace TheFlow.Elements.Events
             return;
         }
         
-        public static readonly TypedEventCatcher<TEvent> Instance =
+//        public static readonly TypedEventCatcher<TEvent> Instance =
+//            new TypedEventCatcher<TEvent>();
+        
+        public static TypedEventCatcher<TEvent> Create() =>
             new TypedEventCatcher<TEvent>();
     }
 }

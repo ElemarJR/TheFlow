@@ -122,7 +122,7 @@ namespace TheFlow.Tests.Unit
         public void AnswerIfCouldStartWithSpecificEvent()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", TypedEventCatcher<Start>.Instance)
+                .AddEventCatcher("start", TypedEventCatcher<Start>.Create())
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "end");
 
