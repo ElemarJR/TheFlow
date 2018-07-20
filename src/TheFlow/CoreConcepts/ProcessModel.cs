@@ -79,12 +79,6 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddActivity(NamedProcessElement<Activity> activity) 
             => new ProcessModel(Id, Version + 1, Elements.Add(activity));
 
-        public ProcessModel AddDataElementFactory(string name, IDataElementFactory dataElement)
-            => AddDataElementFactory(ProcessElement<IDataElementFactory>.Create(name, dataElement));
-        
-        public ProcessModel AddDataElementFactory(NamedProcessElement<IDataElementFactory> dataElement)
-            => new ProcessModel(Id, Version + 1, Elements.Add(dataElement));
-        
         public IEnumerable<IProcessElement<IConnectionElement>> GetIncomingConnections(
             string elementName
         )
@@ -112,9 +106,6 @@ namespace TheFlow.CoreConcepts
         public INamedProcessElement<IElement> GetElementByName(string name) => Elements
             .OfType<INamedProcessElement<IElement>>()
             .FirstOrDefault(e => e.Name == name);
-
-        public INamedProcessElement<IDataElementFactory> GetDataElementFactoryByName(string name) =>
-            GetElementByName(name) as INamedProcessElement<IDataElementFactory>;    
 
         public bool TryToGetEndEventThrower(
             string name,

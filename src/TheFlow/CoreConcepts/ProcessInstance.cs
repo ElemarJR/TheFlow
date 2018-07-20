@@ -251,22 +251,6 @@ namespace TheFlow.CoreConcepts
             return MoveOn(model, new[] { token });
         }
 
-        public object GetDataElementInstance(
-            ProcessModel model,
-            string dataElementName
-            )
-        {
-            if (_dataInstances.TryGetValue(dataElementName, out var dataElementInstance))
-            {
-                return dataElementInstance;
-            }
-
-            var dataElementFactory = model.GetDataElementFactoryByName(dataElementName);
-            
-            var newDataElement = dataElementFactory.Element.CreateInstance();
-            _dataInstances.Add(dataElementName, newDataElement);
-            return newDataElement;
-        }
         
 
         public ProcessInstance GetProcessInstance(Guid id) => 

@@ -12,8 +12,8 @@ namespace TheFlow.Notifications.Application.Workflow
             Guid.Parse("368edbc0-97c1-4d92-a0e6-fd82c25fe1a8");
 
         public static ProcessModel Create() => ProcessModel.Create(MessagingProcessId)
-            .AddEventCatcher("newMessage", TypedEventCatcher<NewMessageEvent>.Instance)
-            .AddEventCatcher("processed", TypedEventCatcher<MessageProcessedEvent>.Instance)
+            .AddEventCatcher("newMessage", TypedEventCatcher<NewMessageEvent>.Create())
+            .AddEventCatcher("processed", TypedEventCatcher<MessageProcessedEvent>.Create())
             .AddEventThrower("end", SilentEventThrower.Instance)
             .AddSequenceFlow("newMessage", "processed", "end");
     }
