@@ -10,9 +10,9 @@ namespace TheFlow.Tests.Unit
         [Fact]
         public void UpdateTheDataInputCurrentValue()
         {
-            var input = new DataInput<string>("a");
-            var output = new DataOutput<string>("a");
-            var association = DataAssociation<string>.Create(
+            var input = new DataInput("a");
+            var output = new DataOutput("a");
+            var association = DataAssociation.Create(
                 input,
                 output
                 );
@@ -26,9 +26,9 @@ namespace TheFlow.Tests.Unit
         {
             Action act = () =>
             {
-                DataAssociation<string>.Create(
+                DataAssociation.Create(
                     null,
-                    new DataOutput<string>("a")
+                    new DataOutput("a")
                 );
             };
             act.Should().Throw<ArgumentNullException>();
@@ -39,8 +39,8 @@ namespace TheFlow.Tests.Unit
         {
             Action act = () =>
             {
-                DataAssociation<string>.Create(
-                    new DataInput<string>("a"), 
+                DataAssociation.Create(
+                    new DataInput("a"), 
                     null
                 );
             };

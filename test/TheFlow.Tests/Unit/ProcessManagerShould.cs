@@ -15,7 +15,7 @@ namespace TheFlow.Tests.Unit
         {
             var model = ProcessModel.Create()
                 .AddEventCatcher("start", TypedEventCatcher<Start>.Instance)
-                .AddEventCatcher("middle", CatchAnyEventCatcher.Instance)
+                .AddEventCatcher("middle", CatchAnyEventCatcher.Create())
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "middle", "end");
 

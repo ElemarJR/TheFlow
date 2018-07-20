@@ -2,14 +2,14 @@ using System;
 
 namespace TheFlow.Elements.Data
 {
-    public class DataAssociation<T>
+    public class DataAssociation
     {
-        public DataInput<T> Input { get; }
-        public DataOutput<T> Output { get; }
+        public DataInput Input { get; }
+        public DataOutput Output { get; }
         
         private DataAssociation(
-            DataInput<T> input,
-            DataOutput<T> output
+            DataInput input,
+            DataOutput output
             )
         {
             Input = input ?? throw new ArgumentNullException(nameof(input));
@@ -17,12 +17,12 @@ namespace TheFlow.Elements.Data
             output.Subscribe((data) => Input.Update(data));
         }
 
-        public static DataAssociation<T> Create(
-            DataInput<T> input,
-            DataOutput<T> output
+        public static DataAssociation Create(
+            DataInput input,
+            DataOutput output
         )
         {
-            return new DataAssociation<T>(input, output);
+            return new DataAssociation(input, output);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace TheFlow.Elements.Events
+﻿using TheFlow.Elements.Data;
+
+namespace TheFlow.Elements.Events
 {
     public class TypedEventCatcher<TEvent> : IEventCatcher 
         where TEvent : class
@@ -11,16 +13,12 @@
             HandleImpl(@event as TEvent);
         }
 
-        public void AddDataOutput(string key)
+        private DataOutput _dataOutput;
+        void IEventCatcher.SetEventDataOutput(DataOutput dataOutput)
         {
-            throw new System.NotImplementedException();
+            _dataOutput = dataOutput;
         }
-
-        public void AddDataInput(string key)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        
         public bool CanHandle(TEvent @event) =>
             CanHandleImpl(@event);
 

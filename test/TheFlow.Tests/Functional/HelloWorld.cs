@@ -16,7 +16,7 @@ namespace TheFlow.Tests.Functional
         {
             var passed = false;
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", CatchAnyEventCatcher.Instance)
+                .AddEventCatcher("start", CatchAnyEventCatcher.Create())
                 .AddActivity("activity", LambdaActivity.Create(() => passed = true))
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "activity", "end");

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace TheFlow.Elements.Data
 {
-
-    public class DataOutput<T>
+    public class DataOutput
     {
         public string Name { get; }
 
@@ -13,15 +12,15 @@ namespace TheFlow.Elements.Data
         {
             Name = name;
         }
-        
-        
-        List<Action<T>> _subscriptions = new List<Action<T>>();
-        internal void Subscribe(Action<T> action)
+
+
+        readonly List<Action<object>> _subscriptions = new List<Action<object>>();
+        internal void Subscribe(Action<object> action)
         {
             _subscriptions.Add(action);
         }
         
-        public void Update(T newValue)
+        public void Update(object newValue)
         {
             _subscriptions.ForEach(s => s(newValue));
         }

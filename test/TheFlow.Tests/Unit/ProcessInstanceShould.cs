@@ -24,11 +24,11 @@ namespace TheFlow.Tests.Unit
             var model = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle", 
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -51,11 +51,11 @@ namespace TheFlow.Tests.Unit
             var model = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -86,11 +86,11 @@ namespace TheFlow.Tests.Unit
             var model = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -112,15 +112,15 @@ namespace TheFlow.Tests.Unit
             var model = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle1", 
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle2",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -147,11 +147,11 @@ namespace TheFlow.Tests.Unit
             var model = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle", 
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -181,7 +181,7 @@ namespace TheFlow.Tests.Unit
         {
             var count = 0;
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", CatchAnyEventCatcher.Instance)
+                .AddEventCatcher("start", CatchAnyEventCatcher.Create())
                 .AddActivity("a1", LambdaActivity.Create(() => count++))
                 .AddActivity("a2", LambdaActivity.Create(() => count++))
                 .AddActivity("a3", LambdaActivity.Create(() => count++))
@@ -202,7 +202,7 @@ namespace TheFlow.Tests.Unit
         {
             var count = 0;
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", CatchAnyEventCatcher.Instance)
+                .AddEventCatcher("start", CatchAnyEventCatcher.Create())
                 .AddActivity("a1", LambdaActivity.Create(() => count++))
                 .AddActivity("a2", LambdaActivity.Create(() => count++))
                 .AddActivity("a3", LambdaActivity.Create(() => count++))
@@ -221,7 +221,7 @@ namespace TheFlow.Tests.Unit
         public void TokenShouldNotBeActiveWhenProcessIsDone()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start", CatchAnyEventCatcher.Instance)
+                .AddEventCatcher("start", CatchAnyEventCatcher.Create())
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "end");
 

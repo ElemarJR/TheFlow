@@ -159,7 +159,7 @@ namespace TheFlow.CoreConcepts
             id == Guid.Parse(Id) ? this : null;
 
         public static ProcessModel CreateWithSingleActivity(LambdaActivity activity) => Create()
-            .AddEventCatcher("start", CatchAnyEventCatcher.Instance)
+            .AddEventCatcher("start", CatchAnyEventCatcher.Create())
             .AddActivity("activity", activity)
             .AddEventThrower("end", SilentEventThrower.Instance)
             .AddSequenceFlow("start", "activity", "end");

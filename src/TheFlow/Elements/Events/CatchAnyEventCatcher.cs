@@ -1,4 +1,4 @@
-﻿using System;
+﻿using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Events
 {
@@ -7,30 +7,18 @@ namespace TheFlow.Elements.Events
         private CatchAnyEventCatcher()
         {}
         
-        public static readonly IEventCatcher Instance =
-            new CatchAnyEventCatcher();
-        
+        public static IEventCatcher Create() 
+            => new CatchAnyEventCatcher();
+
         public bool CanHandle(object @event) => true;
 
         public void Handle(object @event) {}
         
-        public static CatchAnyEventCatcherBuilder Builder() 
-            => new CatchAnyEventCatcherBuilder();
-    }
+        private DataOutput _dataOutput;
 
-    public class CatchAnyEventCatcherBuilder
-    {
-        public CatchAnyEventCatcherBuilder AddDataOutput(string eventdata)
+        public void SetEventDataOutput(DataOutput dataOutput)
         {
-            throw new System.NotImplementedException();
+            _dataOutput = dataOutput;
         }
-
-        public CatchAnyEventCatcher Build()
-        {
-            throw new NotImplementedException();
-        }
-
-        public static implicit operator CatchAnyEventCatcher(CatchAnyEventCatcherBuilder builder)
-            => builder.Build();
     }
 }

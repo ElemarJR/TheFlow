@@ -10,8 +10,8 @@ namespace TheFlow.Tests.Unit
         public void AcceptSubscription()
         {
             string value = null;
-            var output = new DataOutput<string>("a");
-            output.Subscribe((s) => value = s);
+            var output = new DataOutput("a");
+            output.Subscribe((s) => value = (string)s);
             output.Update("Hello World");
             value.Should().Be("Hello World");
         }

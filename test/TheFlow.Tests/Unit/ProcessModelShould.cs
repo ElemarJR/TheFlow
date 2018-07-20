@@ -26,7 +26,7 @@ namespace TheFlow.Tests.Unit
             var processModel = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -44,11 +44,11 @@ namespace TheFlow.Tests.Unit
             var processModel = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventCatcher(
                     "middle",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "end",
@@ -80,7 +80,7 @@ namespace TheFlow.Tests.Unit
             var processModel = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(
                     "middle",
@@ -103,7 +103,7 @@ namespace TheFlow.Tests.Unit
             var processModel = ProcessModel.Create()
                 .AddEventCatcher(
                     "start",
-                    CatchAnyEventCatcher.Instance
+                    CatchAnyEventCatcher.Create()
                 )
                 .AddEventThrower(obj)
                 .AddEventThrower(

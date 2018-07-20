@@ -11,7 +11,7 @@ namespace TheFlow.Tests.Unit
         [Fact]
         public void HoldValueAfterUpdate()
         {
-            var di = new DataInput<string>("a");
+            var di = new DataInput("a");
             di.Update("Hello World");
             di.CurrentValue.Should().Be("Hello World");
         }

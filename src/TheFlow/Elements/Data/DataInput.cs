@@ -2,7 +2,7 @@ using System;
 
 namespace TheFlow.Elements.Data
 {
-    public class DataInput<T>
+    public class DataInput
     {
         public string Name { get; }
 
@@ -11,8 +11,8 @@ namespace TheFlow.Elements.Data
             Name = name;
         }
         
-        public T CurrentValue { get; private set; }
-        public void Update(T data)
+        public object CurrentValue { get; private set; }
+        public void Update(object data)
         {
             CurrentValue = data;
         }
