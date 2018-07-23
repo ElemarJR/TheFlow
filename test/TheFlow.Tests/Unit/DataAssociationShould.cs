@@ -38,8 +38,10 @@ namespace TheFlow.Tests.Unit
             var instance = ProcessInstance.Create(model);
             manager.Attach(instance);
             
-            output.Update(manager, Guid.Parse(instance.Id), "element1", "Hello World");
-            input.GetCurrentValue(manager, Guid.Parse(instance.Id), "element2").Should().Be("Hello World");
+            var context = new ExecutionContext(manager, model, instance, instance.Token);
+            
+            output.Update(context, "element1", "Hello World");
+            input.GetCurrentValue(context, "element2").Should().Be("Hello World");
         }
     }
 }

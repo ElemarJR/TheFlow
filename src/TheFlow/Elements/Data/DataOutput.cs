@@ -15,37 +15,30 @@ namespace TheFlow.Elements.Data
         }
         
         
-        public void Update(IServiceProvider sp,
-            Guid processInstanceId,
-            string parentElementName,
+        public void Update(
+            ExecutionContext context,
+            string parentElementId,
             object newValue
             )
         {
-            var pip = sp.GetService<IProcessInstanceProvider>();
-            var pim = sp.GetService<IProcessModelProvider>();
-
-            var instance = pip.GetProcessInstance(processInstanceId);
-            // TODO: Provide an overload that accepts string
-            var model = pim.GetProcessModel(Guid.Parse(instance.ProcessModelId));
-
-            var allAssociations = model.Elements
+            var allAssociations = context.Model.Elements
                 .OfType<INamedProcessElement<DataAssociation>>();
             
             var associations = allAssociations
                 .Select(namedAssociation => namedAssociation.Element)
                 .Where(association =>
-                    association.DataProducerName == parentElementName &&
+                    association.DataProducerName == parentElementId &&
                     association.OutputName == Name
                 );
 
             foreach (var association in associations)
             {
                 // TODO: Target not found?
-                var consumerElement = model.GetElementByName(association.DataConsumerName)
+                var consumerElement = context.Model.GetElementByName(association.DataConsumerName)
                     ?.Element as IDataConsumer;
                 var input = consumerElement.GetDataInputByName(association.InputName);
                 
-                input.Update(sp, processInstanceId, association.DataConsumerName, newValue);
+                input.Update(context, association.DataConsumerName, newValue);
             }
             //_subscriptions.ForEach(s => s(newValue));
         }

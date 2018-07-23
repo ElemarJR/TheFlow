@@ -1,4 +1,5 @@
 using System;
+using TheFlow.CoreConcepts;
 
 namespace TheFlow.Elements.Data
 {
@@ -12,25 +13,19 @@ namespace TheFlow.Elements.Data
         }
         
         public void Update(
-            IServiceProvider sp,
-            Guid processInstanceId,
+            ExecutionContext context,
             string parentElementName,
             object data)
         {
-            var pip = sp.GetService<IProcessInstanceProvider>();
-            var instance = pip.GetProcessInstance(processInstanceId);
-            instance.SetDataInputValue(parentElementName, Name, data);
+            context.Instance.SetDataInputValue(parentElementName, Name, data);
         }
 
         public object GetCurrentValue(
-            IServiceProvider sp,
-            Guid processInstanceId,
+            ExecutionContext context,
             string parentElementName
         )
         {
-            var pip = sp.GetService<IProcessInstanceProvider>();
-            var instance = pip.GetProcessInstance(processInstanceId);
-            return instance.GetDataInputValue(parentElementName, Name);
+            return context.Instance.GetDataInputValue(parentElementName, Name);
         }
 
         public DataInput GetDataInputByName(string name) 
