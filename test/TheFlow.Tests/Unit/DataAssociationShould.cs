@@ -16,11 +16,11 @@ namespace TheFlow.Tests.Unit
         {
             var output = new DataOutput("a");
             var element1 = new NullElement();
-            element1.AddDataOutput(output);
+            element1.Outputs.Add(output);
             
             var input = new DataInput("a");
             var element2 = new NullElement();
-            element2.AddDataInput(input);
+            element2.Inputs.Add(input);
             
             var model = ProcessModel.Create()
                 .AddNullElement("element1", element1)
