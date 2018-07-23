@@ -1,7 +1,9 @@
-﻿namespace TheFlow.Elements.Events
+﻿using System;
+
+namespace TheFlow.Elements.Events
 {
     public interface IEventThrower : IElement
     {
-        void Throw();
+        void Throw(IServiceProvider serviceProvider);
     }
 }

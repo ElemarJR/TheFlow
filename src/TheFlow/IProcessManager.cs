@@ -15,5 +15,7 @@ namespace TheFlow
         HandleResult HandleActivityCompletation(Guid processInstanceId, Guid tokenId, object completationData);
         
         IEnumerable<HandleResult> HandleEvent(object e);
+
+        void Attach(ProcessInstance instance);
     }
 }

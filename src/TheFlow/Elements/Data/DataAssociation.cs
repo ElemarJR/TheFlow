@@ -2,27 +2,41 @@ using System;
 
 namespace TheFlow.Elements.Data
 {
-    public class DataAssociation
+    public class DataAssociation : IElement
     {
-        public DataInput Input { get; }
-        public DataOutput Output { get; }
-        
+        public string DataProducerName { get; }
+        public string OutputName { get; }
+        public string DataConsumerName { get; }
+        public string InputName { get; }
+
         private DataAssociation(
-            DataInput input,
-            DataOutput output
+            string dataProducerName,
+            string outputName,
+            string dataConsumerName,
+            string inputName
             )
         {
-            Input = input ?? throw new ArgumentNullException(nameof(input));
-            Output = output ?? throw new ArgumentNullException(nameof(output));
-            output.Subscribe((data) => Input.Update(data));
+            DataProducerName = dataProducerName;
+            OutputName = outputName;
+            DataConsumerName = dataConsumerName;
+            InputName = inputName;
         }
 
         public static DataAssociation Create(
-            DataInput input,
-            DataOutput output
-        )
+            string dataProducerName,
+            string outputName,
+            string dataConsumerName,
+            string inputName
+
+            )
         {
-            return new DataAssociation(input, output);
+            return new DataAssociation(
+                dataProducerName,
+                outputName,
+                dataConsumerName,
+                inputName
+                );
+            
         }
     }
 }

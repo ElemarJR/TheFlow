@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Xml.Schema;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Connections;
@@ -37,6 +38,9 @@ namespace TheFlow.CoreConcepts
 //            ImmutableList<IProcessElement<IElement>>.Empty
 //        );  
         #endregion
+        
+        public ProcessModel AddNullElement(string name, NullElement n)
+            => new ProcessModel(Id, Version + 1, Elements.Add(NamedProcessElement<NullElement>.Create(name, n)));
 
         public ProcessModel AddEventCatcher(string name, IEventCatcher catcher)
             => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
@@ -44,13 +48,23 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher) 
             => new ProcessModel(Id, Version + 1, Elements.Add(catcher));
 
-       
         public ProcessModel AddEventThrower(string name, IEventThrower thrower)
             => AddEventThrower(NamedProcessElement<IEventThrower>.Create(name, thrower));
         
         public ProcessModel AddEventThrower(NamedProcessElement<IEventThrower> thrower) 
             => new ProcessModel(Id, Version + 1, Elements.Add(thrower));
 
+        // validate null
+        public ProcessModel AddDataAssociation(
+            string name,
+            DataAssociation association
+        )
+        {
+            return new ProcessModel(Id,
+                Version + 1,
+                Elements.Add(NamedProcessElement<DataAssociation>.Create(name, association))
+            );
+        }
         public ProcessModel AddSequenceFlow(
             string from,
             string to,
@@ -143,8 +157,9 @@ namespace TheFlow.CoreConcepts
             ImmutableList.Create<IProcessElement<IElement>>()
         );
 
+        // TODO: what pass to the service provider of a starting event?
         public bool CanStartWith(object eventData) => 
-            GetStartEventCatchers().Any(catcher => catcher.Element.CanHandle(eventData));
+            GetStartEventCatchers().Any(catcher => catcher.Element.CanHandle(null, eventData));
 
         public ProcessModel GetProcessModel(Guid id) => 
             id == Guid.Parse(Id) ? this : null;
@@ -155,12 +170,5 @@ namespace TheFlow.CoreConcepts
             .AddEventThrower("end", SilentEventThrower.Instance)
             .AddSequenceFlow("start", "activity", "end");
 
-        public ProcessModel AddDataAssociation(
-            string fromElement, string fromDataOutput, 
-            string toElement, string toDataInput
-            )
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -1,16 +1,18 @@
-﻿using TheFlow.Elements.Data;
+﻿using System;
+using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Events
 {
-    public class TypedEventCatcher<TEvent> : IEventCatcher 
+    public class TypedEventCatcher<TEvent> 
+        : IEventCatcher, IDataProducer
         where TEvent : class
     {
-        bool IEventCatcher.CanHandle(object @event) => 
-            CanHandleImpl(@event as TEvent);
+        bool IEventCatcher.CanHandle(IServiceProvider sp, object @event) => 
+            CanHandleImpl(sp, @event as TEvent);
 
-        void IEventCatcher.Handle(object @event)
+        void IEventCatcher.Handle(IServiceProvider sp, object @event)
         {
-            HandleImpl(@event as TEvent);
+            HandleImpl(sp, @event as TEvent);
         }
 
         private DataOutput _dataOutput;
@@ -19,26 +21,26 @@ namespace TheFlow.Elements.Events
             _dataOutput = dataOutput;
         }
         
-        public bool CanHandle(TEvent @event) =>
-            CanHandleImpl(@event);
+        public bool CanHandle(IServiceProvider sp,TEvent @event) =>
+            CanHandleImpl(sp, @event);
 
-        public void Handle(TEvent @event) =>
-            HandleImpl(@event);
+        public void Handle(IServiceProvider sp, TEvent @event) =>
+            HandleImpl(sp, @event);
 
-        protected virtual bool CanHandleImpl(TEvent @event)
+        protected virtual bool CanHandleImpl(IServiceProvider sp, TEvent @event)
         {
             return @event != null;
         }
 
-        protected virtual void HandleImpl(TEvent @event)
+        protected virtual void HandleImpl(IServiceProvider sp, TEvent @event)
         {
             return;
         }
         
-//        public static readonly TypedEventCatcher<TEvent> Instance =
-//            new TypedEventCatcher<TEvent>();
-        
         public static TypedEventCatcher<TEvent> Create() =>
             new TypedEventCatcher<TEvent>();
+
+        public DataOutput GetDataOutputByName(string name) =>
+            _dataOutput?.Name == name ? _dataOutput : null;
     }
 }

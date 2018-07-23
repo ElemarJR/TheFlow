@@ -45,6 +45,12 @@ namespace TheFlow
             return result;
         }
 
+        // TODO: Verify if instance is valid (not null and with a valid model)
+        public void Attach(ProcessInstance instance)
+        {
+            InstancesStore.Store(instance);
+        }
+
         public HandleResult HandleEvent(
             Guid processInstanceId,
             Guid tokenId,

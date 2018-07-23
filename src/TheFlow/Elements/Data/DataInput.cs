@@ -2,7 +2,7 @@ using System;
 
 namespace TheFlow.Elements.Data
 {
-    public class DataInput
+    public class DataInput : IDataConsumer
     {
         public string Name { get; }
 
@@ -11,12 +11,29 @@ namespace TheFlow.Elements.Data
             Name = name;
         }
         
-        public object CurrentValue { get; private set; }
-        public void Update(object data)
+        public void Update(
+            IServiceProvider sp,
+            Guid processInstanceId,
+            string parentElementName,
+            object data)
         {
-            CurrentValue = data;
+            var pip = sp.GetService<IProcessInstanceProvider>();
+            var instance = pip.GetProcessInstance(processInstanceId);
+            instance.SetDataInputValue(parentElementName, Name, data);
         }
 
+        public object GetCurrentValue(
+            IServiceProvider sp,
+            Guid processInstanceId,
+            string parentElementName
+        )
+        {
+            var pip = sp.GetService<IProcessInstanceProvider>();
+            var instance = pip.GetProcessInstance(processInstanceId);
+            return instance.GetDataInputValue(parentElementName, Name);
+        }
 
+        public DataInput GetDataInputByName(string name) 
+            => name == Name ? this : null;
     }
 }

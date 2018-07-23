@@ -1,4 +1,6 @@
-﻿namespace TheFlow.Elements.Events
+﻿using System;
+
+namespace TheFlow.Elements.Events
 {
     public class SilentEventThrower : IEventThrower
     {
@@ -9,7 +11,7 @@
         public static readonly SilentEventThrower Instance = 
             new SilentEventThrower();
         
-        public void Throw()
+        public void Throw(IServiceProvider sp)
         {}
     }
 }

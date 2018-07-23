@@ -1,8 +1,10 @@
-﻿using TheFlow.Elements.Data;
+﻿using System;
+using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Events
 {
-    public class CatchAnyEventCatcher : IEventCatcher
+    public class CatchAnyEventCatcher 
+        : IEventCatcher, IDataProducer
     {
         private CatchAnyEventCatcher()
         {}
@@ -10,9 +12,9 @@ namespace TheFlow.Elements.Events
         public static IEventCatcher Create() 
             => new CatchAnyEventCatcher();
 
-        public bool CanHandle(object @event) => true;
+        public bool CanHandle(IServiceProvider sp, object @event) => true;
 
-        public void Handle(object @event) {}
+        public void Handle(IServiceProvider sp, object @event) {}
         
         private DataOutput _dataOutput;
 
@@ -20,5 +22,8 @@ namespace TheFlow.Elements.Events
         {
             _dataOutput = dataOutput;
         }
+
+        public DataOutput GetDataOutputByName(string name) => 
+            _dataOutput?.Name == name ? _dataOutput : null;
     }
 }

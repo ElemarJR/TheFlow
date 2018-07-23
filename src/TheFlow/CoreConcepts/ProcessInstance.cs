@@ -11,6 +11,7 @@ namespace TheFlow.CoreConcepts
 {
     public class ProcessInstance : IProcessInstanceProvider, IServiceProvider
     {
+        private readonly IDictionary<DataInputOutputKey, object> _elementsState;
         public string ProcessModelId { get; }
         public string Id { get; }
         public Token Token { get;  }
@@ -20,22 +21,42 @@ namespace TheFlow.CoreConcepts
         private readonly List<HistoryItem> _history;
         public IEnumerable<HistoryItem> History => _history;
 
-        private readonly IDictionary<string, object> _dataInstances;
-        public IDictionary<string, object> DataInstances => _dataInstances;
-        
+        // TODO: Test serialization with RavenDB
         public ProcessInstance(
             string processModelId,
             string id,
             Token token = null,
             IEnumerable<HistoryItem> history = null,
-            IDictionary<string, object> dataInstances = null
+            IDictionary<DataInputOutputKey, object> elementsState = null
             )
         {
-            _dataInstances = dataInstances;
+            
             ProcessModelId = processModelId;
             Id = id;
             Token = token ?? Token.Create();
             _history = history?.ToList() ?? new List<HistoryItem>();
+            _elementsState = elementsState ?? new Dictionary<DataInputOutputKey, object>();
+        }
+
+        public object GetDataInputValue(
+            string elementName, string inputName
+        )
+        {
+            var key = new DataInputOutputKey(elementName, inputName);
+            if (_elementsState.TryGetValue(key, out var result))
+            {
+                return result;
+            }
+
+            return null;
+        }
+
+        public void SetDataInputValue(
+            string elementName, string inputName, object value
+        )
+        {
+            var key = new DataInputOutputKey(elementName, inputName);
+            _elementsState[key] = value;
         }
         
         public static ProcessInstance Create(string processModelId)
@@ -82,7 +103,7 @@ namespace TheFlow.CoreConcepts
             if (!IsRunning)
             {
                 @event = model.GetStartEventCatchers()
-                    .FirstOrDefault(e => e.Element.CanHandle(eventData));
+                    .FirstOrDefault(e => e.Element.CanHandle(this, eventData));
                 token.ExecutionPoint = @event?.Name;
             }
             else
@@ -91,13 +112,13 @@ namespace TheFlow.CoreConcepts
                     as INamedProcessElement<IEventCatcher>;
             }
 
-            if (@event == null || !@event.Element.CanHandle(eventData))
+            if (@event == null || !@event.Element.CanHandle(this, eventData))
             {
                 return Enumerable.Empty<Token>();
             }
 
             // TODO: Handle Exceptions
-            @event.Element.Handle(eventData);
+            @event.Element.Handle(this, eventData);
             _history.Add(new HistoryItem(
                 DateTime.UtcNow, token.Id, token.ExecutionPoint, eventData, "eventCatched"
                 ));
@@ -166,7 +187,7 @@ namespace TheFlow.CoreConcepts
                             token.Id, token.ExecutionPoint, null, "eventThrown"
                         ));
                         
-                        et.Throw();
+                        et.Throw(this);
                         if (model.IsEndEventThrower(token.ExecutionPoint))
                         {
                             token.ExecutionPoint = null;
@@ -251,16 +272,21 @@ namespace TheFlow.CoreConcepts
             return MoveOn(model, new[] { token });
         }
 
-        
 
         public ProcessInstance GetProcessInstance(Guid id) => 
             id == Guid.Parse(Id) 
                 ? this 
                 : null;
 
-        public object GetService(Type serviceType) => 
-            serviceType == typeof(IProcessInstanceProvider) 
-                ? this 
-                : null;
+        public object GetService(Type serviceType)
+        {
+            if (serviceType == typeof(ProcessInstance))
+                return this;
+            
+            if (serviceType == typeof(IProcessInstanceProvider))
+                return this;
+            
+            return null;
+        }
     }
 }
