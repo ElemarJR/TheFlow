@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Linq;
 using TheFlow.CoreConcepts;
+using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Activities
 {
-    public class LambdaActivity : Activity
+    public class LambdaActivity : Activity,
+        IDataConsumer, IDataProducer
     {
-        public Action<IServiceProvider> Action { get; }
+        public Action<ExecutionContext> Action { get; }
 
-        private LambdaActivity(Action<IServiceProvider> action)
+        private LambdaActivity(Action<ExecutionContext> action)
         {
             Action = action ?? throw new ArgumentNullException(nameof(action));
         }
@@ -17,31 +20,29 @@ namespace TheFlow.Elements.Activities
         ) => Create(sp => action());
 
         public static LambdaActivity Create(
-            Action<IServiceProvider> action
+            Action<ExecutionContext> action
         ) => new LambdaActivity(action);
 
         public override void Run(
-            IServiceProvider serviceProvider,
-            Guid instanceId, 
-            Guid tokenId
+            ExecutionContext context
             )
         {
-            var instance = serviceProvider
-                .GetService<IProcessInstanceProvider>()
-                .GetProcessInstance(instanceId);
-            
-            var model = serviceProvider.GetService<ProcessModel>();
+            var model = context.ServiceProvider.GetService<ProcessModel>();
 
-            Action(serviceProvider);
+            Action(context);
 
-            instance
-                .HandleActivityCompletation(tokenId, model, null);
+            context.Instance
+                .HandleActivityCompletation(context.Token.Id, model, null);
         }
 
-        Activity AddDataInput(string key)
-        {
-            throw new NotImplementedException();
-        }
+        public  readonly DataOutputCollection Outputs = new DataOutputCollection();
+        public readonly DataInputCollection Inputs = new DataInputCollection();
 
+        
+        public DataOutput GetDataOutputByName(string name) 
+            => Outputs.FirstOrDefault(o => o.Name == name);
+
+        public DataInput GetDataInputByName(string name) 
+            => Inputs.FirstOrDefault(i => i.Name == name);
     }
 }

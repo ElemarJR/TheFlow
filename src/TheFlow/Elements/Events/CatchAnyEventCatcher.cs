@@ -1,4 +1,5 @@
 ﻿using System;
+using TheFlow.CoreConcepts;
 using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Events
@@ -12,9 +13,12 @@ namespace TheFlow.Elements.Events
         public static IEventCatcher Create() 
             => new CatchAnyEventCatcher();
 
-        public bool CanHandle(IServiceProvider sp, object @event) => true;
+        public bool CanHandle(ExecutionContext context, object @event) => true;
 
-        public void Handle(IServiceProvider sp, object @event) {}
+        public void Handle(ExecutionContext context, object @event)
+        {
+            
+        }
         
         private DataOutput _dataOutput;
 

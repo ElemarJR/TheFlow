@@ -1,4 +1,5 @@
 ﻿using System;
+using TheFlow.CoreConcepts;
 
 namespace TheFlow.Elements.Events
 {
@@ -11,7 +12,7 @@ namespace TheFlow.Elements.Events
         public static readonly SilentEventThrower Instance = 
             new SilentEventThrower();
         
-        public void Throw(IServiceProvider sp)
+        public void Throw(ExecutionContext context)
         {}
     }
 }

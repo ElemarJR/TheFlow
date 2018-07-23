@@ -1,4 +1,5 @@
 ﻿using System;
+using TheFlow.CoreConcepts;
 using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Events
@@ -7,12 +8,12 @@ namespace TheFlow.Elements.Events
         : IEventCatcher, IDataProducer
         where TEvent : class
     {
-        bool IEventCatcher.CanHandle(IServiceProvider sp, object @event) => 
-            CanHandleImpl(sp, @event as TEvent);
+        bool IEventCatcher.CanHandle(ExecutionContext context, object @event) => 
+            CanHandleImpl(context, @event as TEvent);
 
-        void IEventCatcher.Handle(IServiceProvider sp, object @event)
+        void IEventCatcher.Handle(ExecutionContext context, object @event)
         {
-            HandleImpl(sp, @event as TEvent);
+            HandleImpl(context, @event as TEvent);
         }
 
         private DataOutput _dataOutput;
@@ -21,18 +22,18 @@ namespace TheFlow.Elements.Events
             _dataOutput = dataOutput;
         }
         
-        public bool CanHandle(IServiceProvider sp,TEvent @event) =>
-            CanHandleImpl(sp, @event);
+        public bool CanHandle(ExecutionContext context,TEvent @event) =>
+            CanHandleImpl(context, @event);
 
-        public void Handle(IServiceProvider sp, TEvent @event) =>
-            HandleImpl(sp, @event);
+        public void Handle(ExecutionContext context, TEvent @event) =>
+            HandleImpl(context, @event);
 
-        protected virtual bool CanHandleImpl(IServiceProvider sp, TEvent @event)
+        protected virtual bool CanHandleImpl(ExecutionContext context, TEvent @event)
         {
             return @event != null;
         }
 
-        protected virtual void HandleImpl(IServiceProvider sp, TEvent @event)
+        protected virtual void HandleImpl(ExecutionContext context, TEvent @event)
         {
             return;
         }

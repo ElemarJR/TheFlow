@@ -99,11 +99,18 @@ namespace TheFlow.CoreConcepts
 
             INamedProcessElement<IEventCatcher> @event;
 
+            var context = new ExecutionContext(
+                this,
+                model,
+                this,
+                token
+            );
+            
             // TODO: What if it is already running?
             if (!IsRunning)
             {
                 @event = model.GetStartEventCatchers()
-                    .FirstOrDefault(e => e.Element.CanHandle(this, eventData));
+                    .FirstOrDefault(e => e.Element.CanHandle(context, eventData));
                 token.ExecutionPoint = @event?.Name;
             }
             else
@@ -111,14 +118,16 @@ namespace TheFlow.CoreConcepts
                 @event = model.GetElementByName(token.ExecutionPoint)
                     as INamedProcessElement<IEventCatcher>;
             }
+            
+            
 
-            if (@event == null || !@event.Element.CanHandle(this, eventData))
+            if (@event == null || !@event.Element.CanHandle(context, eventData))
             {
                 return Enumerable.Empty<Token>();
             }
 
             // TODO: Handle Exceptions
-            @event.Element.Handle(this, eventData);
+            @event.Element.Handle(context, eventData);
             _history.Add(new HistoryItem(
                 DateTime.UtcNow, token.Id, token.ExecutionPoint, eventData, "eventCatched"
                 ));
@@ -176,8 +185,12 @@ namespace TheFlow.CoreConcepts
                         _history.Add(new HistoryItem(
                             DateTime.UtcNow, token.Id, token.ExecutionPoint, null, "activityStarted"
                         ));
+                        
+                        var context = new ExecutionContext(
+                            sp, model, this, token
+                            );
 
-                        a.Run(sp, Guid.Parse(Id), token.Id);
+                        a.Run(context);
                         break;
                     }
                     else if (element is IEventThrower et)
@@ -187,7 +200,11 @@ namespace TheFlow.CoreConcepts
                             token.Id, token.ExecutionPoint, null, "eventThrown"
                         ));
                         
-                        et.Throw(this);
+                        var context = new ExecutionContext(
+                            this, model, this, token
+                        );
+                        
+                        et.Throw(context);
                         if (model.IsEndEventThrower(token.ExecutionPoint))
                         {
                             token.ExecutionPoint = null;

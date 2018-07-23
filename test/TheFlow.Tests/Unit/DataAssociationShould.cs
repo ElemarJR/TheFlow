@@ -41,32 +41,5 @@ namespace TheFlow.Tests.Unit
             output.Update(manager, Guid.Parse(instance.Id), "element1", "Hello World");
             input.GetCurrentValue(manager, Guid.Parse(instance.Id), "element2").Should().Be("Hello World");
         }
-
-//        [Fact]
-//        public void ThrowArgumentNullExceptionWhenDataInputIsNull()
-//        {
-//            Action act = () =>
-//            {
-//                DataAssociation.Create(
-//                    null,
-//                    new DataOutput("a")
-//                );
-//            };
-//            act.Should().Throw<ArgumentNullException>();
-//        }
-//
-//        [Fact]
-//        public void ThrowArgumentNullExceptionWhenDataOutputIsNull()
-//        {
-//            Action act = () =>
-//            {
-//                DataAssociation.Create(
-//                    new DataInput("a"), 
-//                    null
-//                );
-//            };
-//            act.Should().Throw<ArgumentNullException>();
-//        }
-
     }
 }
