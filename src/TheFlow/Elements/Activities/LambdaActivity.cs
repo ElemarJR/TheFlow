@@ -34,7 +34,7 @@ namespace TheFlow.Elements.Activities
         {
             var model = context.ServiceProvider.GetService<ProcessModel>();
 
-            Action(context);
+            Action(this, context);
 
             context.Instance
                 .HandleActivityCompletation(context.Token.Id, model, null);
