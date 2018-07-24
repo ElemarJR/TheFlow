@@ -45,5 +45,8 @@ namespace TheFlow.Elements.Data
 
         public DataOutput GetDataOutputByName(string name) 
             => name == Name ? this : null;
+
+        public static implicit operator DataOutput(string name) 
+            => new DataOutput(name);
     }
 }

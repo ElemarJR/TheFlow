@@ -99,18 +99,20 @@ namespace TheFlow.CoreConcepts
 
             INamedProcessElement<IEventCatcher> @event;
 
-            var context = new ExecutionContext(
-                this,
-                model,
-                this,
-                token
-            );
             
             // TODO: What if it is already running?
             if (!IsRunning)
             {
+                
+
                 @event = model.GetStartEventCatchers()
-                    .FirstOrDefault(e => e.Element.CanHandle(context, eventData));
+                    .FirstOrDefault(e =>
+                    {
+                        var ctx = new ExecutionContext(
+                            this, model, this, token, e.Element
+                        );
+                        return e.Element.CanHandle(ctx, eventData);
+                    });
                 token.ExecutionPoint = @event?.Name;
             }
             else
@@ -119,7 +121,9 @@ namespace TheFlow.CoreConcepts
                     as INamedProcessElement<IEventCatcher>;
             }
             
-            
+            var context = new ExecutionContext(
+                this, model, this, token, @event?.Element
+            );            
 
             if (@event == null || !@event.Element.CanHandle(context, eventData))
             {
@@ -128,6 +132,7 @@ namespace TheFlow.CoreConcepts
 
             // TODO: Handle Exceptions
             @event.Element.Handle(context, eventData);
+            
             _history.Add(new HistoryItem(
                 DateTime.UtcNow, token.Id, token.ExecutionPoint, eventData, "eventCatched"
                 ));
@@ -187,7 +192,7 @@ namespace TheFlow.CoreConcepts
                         ));
                         
                         var context = new ExecutionContext(
-                            sp, model, this, token
+                            sp, model, this, token, a
                             );
 
                         a.Run(context);
@@ -201,7 +206,7 @@ namespace TheFlow.CoreConcepts
                         ));
                         
                         var context = new ExecutionContext(
-                            this, model, this, token
+                            this, model, this, token, et
                         );
                         
                         et.Throw(context);

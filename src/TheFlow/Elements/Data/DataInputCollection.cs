@@ -15,10 +15,6 @@ namespace TheFlow.Elements.Data
         IEnumerator IEnumerable.GetEnumerator() 
             => _inner.GetEnumerator();
 
-        public void Add(string item)
-        {
-            Add(new DataInput(item));
-        }
         
         public void Add(DataInput item)
         {

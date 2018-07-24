@@ -30,5 +30,8 @@ namespace TheFlow.Elements.Data
 
         public DataInput GetDataInputByName(string name) 
             => name == Name ? this : null;
+        
+        public static implicit operator DataInput(string name) =>
+            new DataInput(name);
     }
 }

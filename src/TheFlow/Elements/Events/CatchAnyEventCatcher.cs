@@ -17,7 +17,7 @@ namespace TheFlow.Elements.Events
 
         public void Handle(ExecutionContext context, object @event)
         {
-            
+            _dataOutput?.Update(context, context.Token.ExecutionPoint, @event);
         }
         
         private DataOutput _dataOutput;

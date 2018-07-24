@@ -38,7 +38,7 @@ namespace TheFlow.Tests.Unit
             var instance = ProcessInstance.Create(model);
             manager.Attach(instance);
             
-            var context = new ExecutionContext(manager, model, instance, instance.Token);
+            var context = new ExecutionContext(manager, model, instance, instance.Token, null);
             
             output.Update(context, "element1", "Hello World");
             input.GetCurrentValue(context, "element2").Should().Be("Hello World");
