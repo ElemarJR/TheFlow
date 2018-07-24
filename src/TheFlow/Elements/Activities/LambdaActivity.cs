@@ -8,20 +8,25 @@ namespace TheFlow.Elements.Activities
     public class LambdaActivity : Activity,
         IDataConsumer, IDataProducer
     {
-        public Action<ExecutionContext> Action { get; }
+        public Action<LambdaActivity, ExecutionContext> Action { get; }
 
-        private LambdaActivity(Action<ExecutionContext> action)
+        private LambdaActivity(Action<LambdaActivity, ExecutionContext> action)
         {
             Action = action ?? throw new ArgumentNullException(nameof(action));
         }
        
         public static LambdaActivity Create(
             Action action
-        ) => Create(sp => action());
+        ) => Create(ec => action());
 
         public static LambdaActivity Create(
             Action<ExecutionContext> action
+        ) => Create((la, ec) => action(ec));
+        
+        public static LambdaActivity Create(
+            Action<LambdaActivity, ExecutionContext> action
         ) => new LambdaActivity(action);
+        
 
         public override void Run(
             ExecutionContext context

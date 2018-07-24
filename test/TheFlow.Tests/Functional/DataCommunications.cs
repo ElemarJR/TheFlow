@@ -20,18 +20,18 @@ namespace TheFlow.Tests.Functional
         {
             var input = "Hello World";
             string output = null;
-
+        
             var start = CatchAnyEventCatcher.Create();
             start.SetEventDataOutput("o");
-
-            var activity = LambdaActivity.Create((ctx) =>
+        
+            var activity = LambdaActivity.Create((la, ctx) =>
             {
-                var consumer = ctx.RunningElement as IDataConsumer;
-                var i = consumer.GetDataInputByName("i");
+                var i = la.GetDataInputByName("i");
                 output = (string) i.GetCurrentValue(ctx, "middle");
             });
+            
             activity.Inputs.Add("i");
-
+        
             var model = ProcessModel.Create()
                 .AddEventCatcher("start", start)
                 .AddActivity("middle", activity)
@@ -39,7 +39,7 @@ namespace TheFlow.Tests.Functional
                 .AddSequenceFlow("start", "middle", "end")
                 .AddDataAssociation("startToMiddle",
                     DataAssociation.Create("start", "o", "middle", "i"));
-
+        
             var models = new InMemoryProcessModelsStore();
             models.Store(model);
             
@@ -47,7 +47,7 @@ namespace TheFlow.Tests.Functional
             
             var pm = new ProcessManager(models, instances);
             pm.HandleEvent(input);
-
+        
             output.Should().Be(input);
         }
     }
