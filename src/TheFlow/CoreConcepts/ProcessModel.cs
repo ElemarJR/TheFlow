@@ -11,7 +11,7 @@ using TheFlow.Elements.Events;
 
 namespace TheFlow.CoreConcepts
 {
-    public class ProcessModel : IProcessModelProvider
+    public partial class ProcessModel : IProcessModelProvider
     {
         public string Id { get; }
         public int Version { get; }
@@ -39,59 +39,7 @@ namespace TheFlow.CoreConcepts
 //        );  
         #endregion
         
-        public ProcessModel AddNullElement(string name, NullElement n)
-            => new ProcessModel(Id, Version + 1, Elements.Add(NamedProcessElement<NullElement>.Create(name, n)));
-
-        public ProcessModel AddEventCatcher(string name, IEventCatcher catcher)
-            => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
-        
-        public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher) 
-            => new ProcessModel(Id, Version + 1, Elements.Add(catcher));
-
-        public ProcessModel AddEventThrower(string name, IEventThrower thrower)
-            => AddEventThrower(NamedProcessElement<IEventThrower>.Create(name, thrower));
-        
-        public ProcessModel AddEventThrower(NamedProcessElement<IEventThrower> thrower) 
-            => new ProcessModel(Id, Version + 1, Elements.Add(thrower));
-
-        // validate null
-        public ProcessModel AddDataAssociation(
-            string name,
-            DataAssociation association
-        )
-        {
-            return new ProcessModel(Id,
-                Version + 1,
-                Elements.Add(NamedProcessElement<DataAssociation>.Create(name, association))
-            );
-        }
-        public ProcessModel AddSequenceFlow(
-            string from,
-            string to,
-            params string []  path)
-        {
-            var result = AddSequenceFlow(SequenceFlow.Create(from, to));
-            from = to;
-            for (var i = 0; i < path.Length; i++)
-            {
-                result = result.AddSequenceFlow(SequenceFlow.Create(from, path[i]));
-                from = path[i];
-            }
-            return result;
-        }
-            
-
-        public ProcessModel AddSequenceFlow(SequenceFlow sequenceFlow)
-            => AddSequenceFlow(ProcessElement<SequenceFlow>.Create(sequenceFlow));
-        
-        public ProcessModel AddSequenceFlow(ProcessElement<SequenceFlow> sequenceFlow)
-            => new ProcessModel(Id, Version + 1, Elements.Add(sequenceFlow));
-
-        public ProcessModel AddActivity(string name, Activity activity)
-            => AddActivity(ProcessElement<Activity>.Create(name, activity));
-        
-        public ProcessModel AddActivity(NamedProcessElement<Activity> activity) 
-            => new ProcessModel(Id, Version + 1, Elements.Add(activity));
+                
 
         public IEnumerable<IProcessElement<IConnectionElement>> GetIncomingConnections(
             string elementName
@@ -169,6 +117,6 @@ namespace TheFlow.CoreConcepts
             .AddActivity("activity", activity)
             .AddEventThrower("end", SilentEventThrower.Instance)
             .AddSequenceFlow("start", "activity", "end");
-
+        
     }
 }

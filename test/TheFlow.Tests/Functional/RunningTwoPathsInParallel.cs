@@ -1,27 +1,34 @@
-﻿using System;
-using TheFlow;
+using System;
+using FluentAssertions;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
-using TheFlow.Elements.Events;
 using TheFlow.Infrastructure.Stores;
+using Xunit;
 
-namespace Playground
+namespace TheFlow.Tests.Functional
 {
-    class Program
+    public class RunningTwoPathsInParallel
     {
-        static void Main(string[] args)
+        [Fact]
+        public void ActivitiesRanInTheRightSequence()
         {
+            var op = 1;
+            var e0 = 0;
+            var e1 = 0;
+            var e2 = 0;
+            var e3 = 0;
+            
             var model = ProcessModel.Create()
                 .AddEventCatcher("start")
-                .AddActivity("msgBefore", LambdaActivity.Create(() => {Console.WriteLine("Before");}))
+                .AddActivity("msgBefore", LambdaActivity.Create(() => { e0 = op++;}))
                 .AddParallelGateway("split")
                 .AddSequenceFlow("start", "msgBefore", "split")
-                .AddActivity("msgLeft", LambdaActivity.Create(() => {Console.WriteLine("Left");}))
-                .AddActivity("msgRight", LambdaActivity.Create(() => {Console.WriteLine("Right");}))
+                .AddActivity("msgLeft", LambdaActivity.Create(() => { e1 = op++;}))
+                .AddActivity("msgRight", LambdaActivity.Create(() => { e2 = op++;}))
                 .AddParallelGateway("join")
                 .AddSequenceFlow("split", "msgLeft", "join")
                 .AddSequenceFlow("split", "msgRight", "join")
-                .AddActivity("msgAfter", LambdaActivity.Create(() => {Console.WriteLine("After");}))
+                .AddActivity("msgAfter", LambdaActivity.Create(() => { e3 = op++;}))
                 .AddEventThrower("end")
                 .AddSequenceFlow("join", "msgAfter", "end");
 
@@ -31,6 +38,8 @@ namespace Playground
             var manager = new ProcessManager(models, instances);
 
             manager.HandleEvent(null);
+
+            (e0 + e1 + e2 + e3).Should().Be(10);
         }
     }
 }

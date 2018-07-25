@@ -8,6 +8,16 @@ namespace TheFlow.Infrastructure.Stores
     {
         private readonly Dictionary<string, ProcessModel> _models = 
             new Dictionary<string, ProcessModel>();
+
+        public InMemoryProcessModelsStore() {}
+
+        public InMemoryProcessModelsStore(params ProcessModel[] models)
+        {
+            foreach (var model in models)
+            {
+                Store(model);
+            }
+        }
         
         public ProcessModel GetById(Guid id)
         {

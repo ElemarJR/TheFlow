@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
@@ -168,8 +169,7 @@ namespace TheFlow.CoreConcepts
             )
         {
             var result = new List<Token>();
-            foreach (var token in tokens)
-            {
+            Parallel.ForEach(tokens, token => {
                 
                 while (true)
                 {
@@ -240,7 +240,7 @@ namespace TheFlow.CoreConcepts
                 }
 
                 result.Add(token);
-            }
+            });
             return result;
         }
 
@@ -279,14 +279,15 @@ namespace TheFlow.CoreConcepts
 
             if (connections.Count() > 1)
             {
-                return connections
+                return MoveOn(model, connections
                     .Select(connection =>
                     {
                         var child = token.AllocateChild();
                         child.ExecutionPoint = connection.Element.To;
+                        
                         return child;
                     })
-                    .ToList();
+                    .ToArray());
             }
 
             token.ExecutionPoint = connections.First().Element.To;
