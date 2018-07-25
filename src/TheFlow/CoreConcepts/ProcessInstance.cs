@@ -169,8 +169,8 @@ namespace TheFlow.CoreConcepts
             )
         {
             var result = new List<Token>();
-            Parallel.ForEach(tokens, token => {
-                
+            foreach (var token in tokens)
+            {
                 while (true)
                 {
                     // TODO: Ensure model is valid (all connections are valid)
@@ -240,7 +240,7 @@ namespace TheFlow.CoreConcepts
                 }
 
                 result.Add(token);
-            });
+            };
             return result;
         }
 
