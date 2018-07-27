@@ -22,8 +22,9 @@ namespace TheFlow.Tests.Functional
                 .AddSequenceFlow("start", "activity", "end");
 
             var instance = ProcessInstance.Create(model.Id);
-
-            instance.HandleEvent(model, new object());
+            
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+            instance.HandleEvent(context, new object());
             passed.Should().BeTrue();
         }
 
@@ -37,7 +38,8 @@ namespace TheFlow.Tests.Functional
 
             var instance = ProcessInstance.Create(model);
 
-            instance.HandleEvent(model, new object());
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+            instance.HandleEvent(context, new object());
             passed.Should().BeTrue();
         }
     }

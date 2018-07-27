@@ -52,12 +52,12 @@ namespace TheFlow.Elements.Activities
             ExecutionContext context
             )
         {
-            var model = context.ServiceProvider.GetService<ProcessModel>();
+            var model = context.Model;
 
             Action(this, context);
 
             context.Instance
-                .HandleActivityCompletation(context.Token.Id, model, null);
+                .HandleActivityCompletation(context, null);
         }
 
     }

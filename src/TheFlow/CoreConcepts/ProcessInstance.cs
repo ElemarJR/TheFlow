@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
@@ -10,7 +11,7 @@ using TheFlow.Infrastructure;
 
 namespace TheFlow.CoreConcepts
 {
-    public class ProcessInstance : IProcessInstanceProvider, IServiceProvider
+    public class ProcessInstance : IProcessInstanceProvider
     {
         private readonly IDictionary<DataInputOutputKey, object> _elementsState;
         public string ProcessModelId { get; }
@@ -70,28 +71,16 @@ namespace TheFlow.CoreConcepts
             => Create(model.Id);
 
         public IEnumerable<Token> HandleEvent(
-            IServiceProvider serviceProvider,
+            ExecutionContext context,
             object eventData
         )
         {
-            var modelProvider = serviceProvider.GetService<IProcessModelProvider>();
-            var model = modelProvider.GetProcessModel(Guid.Parse(ProcessModelId));
-            return HandleEvent(model, eventData);
-        }
-        
-        // TODO: Throw an exception when ProcessModel does not matches
-        public IEnumerable<Token> HandleEvent(
-            ProcessModel model,
-            object eventData
-        ) => HandleEvent(Token.Id, model, eventData);
-
-        public IEnumerable<Token> HandleEvent(
-            Guid tokenId, 
-            ProcessModel model, 
-            object eventData
-            )
-        {
-            var token = Token.FindById(tokenId);
+            var logger = context.ServiceProvider?
+                .GetService<ILogger<ProcessInstance>>();
+            
+            logger?.LogInformation($"Handling Event");
+            
+            var token = context.Token;
 
             if (token == null || !token.IsActive)
             {
@@ -101,44 +90,33 @@ namespace TheFlow.CoreConcepts
             INamedProcessElement<IEventCatcher> @event;
 
             
-            // TODO: What if it is already running?
             if (!IsRunning)
             {
-                
-
-                @event = model.GetStartEventCatchers()
-                    .FirstOrDefault(e =>
-                    {
-                        var ctx = new ExecutionContext(
-                            this, model, this, token, e.Element
-                        );
-                        return e.Element.CanHandle(ctx, eventData);
-                    });
+                @event = context.Model.GetStartEventCatchers()
+                    .FirstOrDefault(e => e.Element.CanHandle(context.WithRunningElement(e.Element), eventData));
                 token.ExecutionPoint = @event?.Name;
             }
             else
             {
-                @event = model.GetElementByName(token.ExecutionPoint)
+                @event = context.Model.GetElementByName(token.ExecutionPoint)
                     as INamedProcessElement<IEventCatcher>;
             }
-            
-            var context = new ExecutionContext(
-                this, model, this, token, @event?.Element
-            );            
 
-            if (@event == null || !@event.Element.CanHandle(context, eventData))
+            var ctx = context.WithRunningElement(@event?.Element);
+
+            if (@event == null || !@event.Element.CanHandle(ctx, eventData))
             {
                 return Enumerable.Empty<Token>();
             }
 
             // TODO: Handle Exceptions
-            @event.Element.Handle(context, eventData);
+            @event.Element.Handle(ctx, eventData);
             
             _history.Add(new HistoryItem(
                 DateTime.UtcNow, token.Id, token.ExecutionPoint, eventData, "eventCatched"
                 ));
 
-            var connections = model
+            var connections = ctx.Model
                 .GetOutcomingConnections(@event.Name)
                 .ToArray();
 
@@ -160,42 +138,46 @@ namespace TheFlow.CoreConcepts
 
             token.ExecutionPoint = connections.First().Element.To;
 
-            return MoveOn(model, new[] {token});
+            MoveOn(ctx, new[] {token});
+
+            return token.GetActionableTokens();
         }
 
-        private IEnumerable<Token> MoveOn(
-            ProcessModel model,
+        private void MoveOn(
+            ExecutionContext context,
             IEnumerable<Token> tokens
             )
         {
-            var result = new List<Token>();
+            var logger = context.ServiceProvider?
+                .GetService<ILogger<ProcessInstance>>();
+    
             foreach (var token in tokens)
             {
+                var scope = logger?.BeginScope($"{token.Id}, {token.ExecutionPoint}");
+                //logger?.LogInformation($"Working on token {token.Id}...");
+
                 while (true)
                 {
                     // TODO: Ensure model is valid (all connections are valid)
-                    var e = model.GetElementByName(token.ExecutionPoint);
+                    var e = context.Model.GetElementByName(token.ExecutionPoint);
                     var element = e.Element;
+                    logger?.LogInformation($"Performing {e.Name} ...");
+
 
                     if (element is Activity a)
                     {
-                        // TODO: Improve this
-                        var sp = new CumulativeServiceProvider(
-                            this,
-                            new ServiceCollection()
-                                .AddSingleton(model)
-                                .BuildServiceProvider()
-                        );
-
+                        
+                        
                         _history.Add(new HistoryItem(
                             DateTime.UtcNow, token.Id, token.ExecutionPoint, null, "activityStarted"
                         ));
                         
-                        var context = new ExecutionContext(
-                            sp, model, this, token, a
+                        var ctx = new ExecutionContext(
+                            context.ServiceProvider, context.Model, this, token, a
                             );
 
-                        a.Run(context);
+                        a.Run(ctx);
+                        
                         break;
                     }
                     else if (element is IEventThrower et)
@@ -205,12 +187,10 @@ namespace TheFlow.CoreConcepts
                             token.Id, token.ExecutionPoint, null, "eventThrown"
                         ));
                         
-                        var context = new ExecutionContext(
-                            this, model, this, token, et
-                        );
                         
-                        et.Throw(context);
-                        if (model.IsEndEventThrower(token.ExecutionPoint))
+                        et.Throw(context.WithRunningElement(et));
+                        
+                        if (context.Model.IsEndEventThrower(token.ExecutionPoint))
                         {
                             token.ExecutionPoint = null;
                             token.Release();
@@ -227,7 +207,7 @@ namespace TheFlow.CoreConcepts
                         throw new NotImplementedException();
                     }
 
-                    var connections = model.GetOutcomingConnections(
+                    var connections = context.Model.GetOutcomingConnections(
                         token.ExecutionPoint
                     ).ToArray();
 
@@ -238,27 +218,23 @@ namespace TheFlow.CoreConcepts
 
                     token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
                 }
-
-                result.Add(token);
+                scope?.Dispose();
             };
-            return result;
         }
 
-        public IEnumerable<Token> HandleActivityCompletation(Guid tokenId, ProcessModel model, object completationData)
+        public IEnumerable<Token> HandleActivityCompletation(ExecutionContext context, object completationData)
         {
             if (!IsRunning)
             {
                 return Enumerable.Empty<Token>();
             }
 
-            var token = Token.FindById(tokenId);
-
-            if (token == null || !token.IsActive)
+            if (context.Token == null || !context.Token.IsActive)
             {
                 return Enumerable.Empty<Token>();
             }
 
-            if (!(model.GetElementByName(token.ExecutionPoint) 
+            if (!(context.Model.GetElementByName(context.Token.ExecutionPoint) 
                 is INamedProcessElement<Activity> activity))
             {
                 return Enumerable.Empty<Token>();
@@ -266,10 +242,10 @@ namespace TheFlow.CoreConcepts
 
             // TODO: Handle Exceptions
             _history.Add(new HistoryItem(
-                DateTime.UtcNow, token.Id, token.ExecutionPoint, completationData, "activityCompleted"
+                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, completationData, "activityCompleted"
             ));
 
-            var connections = model
+            var connections = context.Model
                 .GetOutcomingConnections(activity.Name)
                 .ToArray();
 
@@ -277,39 +253,32 @@ namespace TheFlow.CoreConcepts
             if (!connections.Any())
                 throw new NotSupportedException();
 
+            
             if (connections.Count() > 1)
             {
-                return MoveOn(model, connections
+                
+                MoveOn(context, connections
                     .Select(connection =>
                     {
-                        var child = token.AllocateChild();
+                        var child = context.Token.AllocateChild();
                         child.ExecutionPoint = connection.Element.To;
                         
                         return child;
-                    })
-                    .ToArray());
+                    }));
             }
-
-            token.ExecutionPoint = connections.First().Element.To;
-
-            return MoveOn(model, new[] { token });
+            else
+            {
+                context.Token.ExecutionPoint = connections.First().Element.To;
+                MoveOn(context, new[] { context.Token });
+                
+            }
+            return context.Token.GetActionableTokens();
         }
-
 
         public ProcessInstance GetProcessInstance(Guid id) => 
             id == Guid.Parse(Id) 
                 ? this 
                 : null;
 
-        public object GetService(Type serviceType)
-        {
-            if (serviceType == typeof(ProcessInstance))
-                return this;
-            
-            if (serviceType == typeof(IProcessInstanceProvider))
-                return this;
-            
-            return null;
-        }
     }
 }

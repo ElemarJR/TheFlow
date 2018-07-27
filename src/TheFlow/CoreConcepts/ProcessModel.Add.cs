@@ -72,5 +72,8 @@ namespace TheFlow.CoreConcepts
         
         public ProcessModel AddParallelGateway(string name)
             => new ProcessModel(Id, Version + 1, Elements.Add(NamedProcessElement<ParallelGateway>.Create(name, new ParallelGateway())));
+
+        public ProcessModel AddActivity(string name, Action activity)
+            => AddActivity(name, LambdaActivity.Create(activity));
     }
 }
