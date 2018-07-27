@@ -5,8 +5,7 @@ using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Activities
 {
-    public class LambdaActivity : Activity,
-        IDataConsumer, IDataProducer
+    public class LambdaActivity : Activity
     {
         public Action<LambdaActivity, ExecutionContext> Action { get; }
 
@@ -17,37 +16,49 @@ namespace TheFlow.Elements.Activities
        
         public static LambdaActivity Create(
             Action action
-        ) => Create(ec => action());
+        )
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+            return Create(ec => action());
+        }
 
         public static LambdaActivity Create(
             Action<ExecutionContext> action
-        ) => Create((la, ec) => action(ec));
-        
+        )
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+            return Create((la, ec) => action(ec));
+        }
+
         public static LambdaActivity Create(
             Action<LambdaActivity, ExecutionContext> action
-        ) => new LambdaActivity(action);
-        
+        )
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+            return new LambdaActivity(action);
+        }
+
 
         public override void Run(
             ExecutionContext context
             )
         {
-            var model = context.ServiceProvider.GetService<ProcessModel>();
+            var model = context.Model;
 
             Action(this, context);
 
             context.Instance
-                .HandleActivityCompletation(context.Token.Id, model, null);
+                .HandleActivityCompletation(context, null);
         }
 
-        public  readonly DataOutputCollection Outputs = new DataOutputCollection();
-        public readonly DataInputCollection Inputs = new DataInputCollection();
-
-        
-        public DataOutput GetDataOutputByName(string name) 
-            => Outputs.FirstOrDefault(o => o.Name == name);
-
-        public DataInput GetDataInputByName(string name) 
-            => Inputs.FirstOrDefault(i => i.Name == name);
     }
 }

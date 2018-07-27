@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
 using TheFlow.Infrastructure.Stores;
 
@@ -9,16 +10,20 @@ namespace TheFlow
     public class ProcessManager 
         : IProcessManager, IServiceProvider
     {
+        private readonly IServiceCollection _serviceCollection;
         public IProcessModelsStore ModelsStore { get; }
         public IProcessInstancesStore InstancesStore { get; }
 
         public ProcessManager(
             IProcessModelsStore modelsStore,
-            IProcessInstancesStore instancesStore
+            IProcessInstancesStore instancesStore,
+            IServiceCollection serviceCollection = null
             )
         {
+            _serviceCollection = serviceCollection;
             ModelsStore = modelsStore;
             InstancesStore = instancesStore;
+
         }
 
         public IEnumerable<HandleResult> HandleEvent(object e)
@@ -30,8 +35,11 @@ namespace TheFlow
 
             foreach (var model in models)
             {
+                
                 var instance = ProcessInstance.Create(Guid.Parse(model.Id));
-                var tokens = instance.HandleEvent(model, e);
+                var context = new ExecutionContext(this, model, instance, instance.Token, null);
+
+                var tokens = instance.HandleEvent(context, e);
                 
                 result.Add(new HandleResult(
                     Guid.Parse(model.Id),
@@ -68,8 +76,10 @@ namespace TheFlow
             {
                 throw new InvalidOperationException("Instance process model not found.");
             }
+            
+            var context = new ExecutionContext(this, model, instance, instance.Token.FindById(tokenId), null);
 
-            var tokens = instance.HandleEvent(tokenId, model, eventData);
+            var tokens = instance.HandleEvent(context, eventData);
             
             InstancesStore.Store(instance);
             
@@ -105,8 +115,10 @@ namespace TheFlow
             {
                 throw new InvalidOperationException("Instance process model not found.");
             }
+            
+            var context = new ExecutionContext(this, model, instance, instance.Token.FindById(tokenId), null); 
 
-            var tokens = instance.HandleActivityCompletation(tokenId, model, completationData);
+            var tokens = instance.HandleActivityCompletation(context, completationData);
 
             InstancesStore.Store(instance);
 
@@ -125,7 +137,7 @@ namespace TheFlow
             if (serviceType == typeof(IProcessInstanceProvider))
                 return InstancesStore;
 
-            return null;
+            return _serviceCollection?.BuildServiceProvider()?.GetService(serviceType);
         }
     }
 }

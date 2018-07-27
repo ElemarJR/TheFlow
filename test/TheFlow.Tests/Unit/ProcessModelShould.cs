@@ -130,6 +130,26 @@ namespace TheFlow.Tests.Unit
             model.CanStartWith(new Start()).Should().BeTrue();
 
         }
+
+        [Fact]
+        public void AddEventCatcherShouldCreateDefaultHandlerWhenItIsNotSpecified()
+        {
+            var model = ProcessModel.Create()
+                .AddEventCatcher("start");
+
+            var element = model.GetElementByName("start")?.Element;
+            element.Should().BeOfType<CatchAnyEventCatcher>();
+        }
+
+        [Fact]
+        public void AddEventThrowerShouldCreateDefaultThrowerWhenItIsNotSpecified()
+        {
+            var model = ProcessModel.Create()
+                .AddEventThrower("end");
+
+            var element = model.GetElementByName("end")?.Element;
+            element.Should().BeOfType<SilentEventThrower>();
+        }
         
     }
 }

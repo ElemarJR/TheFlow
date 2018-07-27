@@ -1,5 +1,6 @@
 using System;
 using TheFlow.Elements;
+using TheFlow.Elements.Events;
 
 namespace TheFlow.CoreConcepts
 {
@@ -22,6 +23,29 @@ namespace TheFlow.CoreConcepts
             Instance = instance;
             Token = token;
             RunningElement = runningElement;
+        }
+
+        public ExecutionContext WithRunningElement(IElement runningElement)
+        {
+            return new ExecutionContext(
+                ServiceProvider,
+                Model,
+                Instance,
+                Token,
+                runningElement
+                );
+        }
+
+        public ExecutionContext WithToken(Token token)
+        {
+            return new ExecutionContext(
+                ServiceProvider,
+                Model,
+                Instance,
+                token,
+                RunningElement
+            );
+            
         }
     }
 }

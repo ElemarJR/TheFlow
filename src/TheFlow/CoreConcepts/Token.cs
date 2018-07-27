@@ -36,7 +36,7 @@ namespace TheFlow.CoreConcepts
                 throw new InvalidOperationException("AllocationChild is not allowed after releasing.");
             }
             
-            var allocateChild = new Token(
+                var allocateChild = new Token(
                 Id,
                 Guid.NewGuid(),
                 ExecutionPoint
@@ -71,6 +71,13 @@ namespace TheFlow.CoreConcepts
             return activeChildren.Concat(activeChildren.SelectMany(c => c.GetActiveDescendants()));
         }
 
+        public IEnumerable<Token> GetActionableTokens()
+        {
+            if (IsActive == false) return Enumerable.Empty<Token>();
+            var actionableChildren = _children.SelectMany(c => c.GetActionableTokens()).ToArray();
+            if (actionableChildren.Length != 0) return actionableChildren;
+            return new[] {this};
+        }
 
         public Token FindById(Guid id) => Id == id 
             ? this 

@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "other\Playgro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFlow.Infrastructure.Stores.InstancesStore.RavenDB", "src\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB.csproj", "{E1B19CB3-3AD4-425F-A6DD-A178989C3081}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFlow.Bpmn", "src\TheFlow.Bpmn\TheFlow.Bpmn.csproj", "{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{E1B19CB3-3AD4-425F-A6DD-A178989C3081}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1B19CB3-3AD4-425F-A6DD-A178989C3081}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1B19CB3-3AD4-425F-A6DD-A178989C3081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 		{A8554CC2-A691-4199-BE25-90D0FDA02F74} = {7CC700FF-8971-4F63-8E4B-D193568AFD65}
 		{6F8A2B04-412B-495F-B1B8-E4C9C8F53C42} = {2308C063-E582-4157-9475-4CF1DFA3D15E}
 		{E1B19CB3-3AD4-425F-A6DD-A178989C3081} = {2AFA7CC5-EF58-4D58-AD54-653D990D79C8}
+		{D6F2FB84-AA26-452C-BEB8-B641A8EC7759} = {2AFA7CC5-EF58-4D58-AD54-653D990D79C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D85A4F6-90E3-4DA8-A5EB-A64D4DA53AC4}

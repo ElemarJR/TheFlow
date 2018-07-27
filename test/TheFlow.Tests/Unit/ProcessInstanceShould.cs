@@ -37,8 +37,11 @@ namespace TheFlow.Tests.Unit
                 .AddSequenceFlow("start", "middle")
                 .AddSequenceFlow("middle", "end");
             var instance = ProcessInstance.Create(Guid.Parse(model.Id));
+            
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+
             instance.HandleEvent(
-                instance.Token.Id, model, new object()
+                context, new object()
                 );
             instance.Token.ExecutionPoint.Should().Be("middle");
         }
@@ -65,8 +68,10 @@ namespace TheFlow.Tests.Unit
                 .AddSequenceFlow("middle", "end");
 
             var instance = ProcessInstance.Create(Guid.Parse(model.Id));
+            
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
             instance.HandleEvent(
-                instance.Token.Id, model, new object()
+                context, new object()
             );
             
             instance.History.First().ExecutionPoint.Should().Be("start");
@@ -99,8 +104,9 @@ namespace TheFlow.Tests.Unit
                 .AddSequenceFlow("start", "middle", "end");
 
             var instance = ProcessInstance.Create(Guid.Parse(model.Id));
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
             instance.HandleEvent(
-                instance.Token.Id, model, new object()
+                context, new object()
                 );
             instance.IsRunning.Should().BeTrue();
             instance.Token.ExecutionPoint.Should().Be("middle");
@@ -132,7 +138,8 @@ namespace TheFlow.Tests.Unit
                 .AddSequenceFlow("middle2", "end");
 
             var instance = ProcessInstance.Create(model.Id);
-            var tokens = instance.HandleEvent(instance.Token.Id, model, new object());
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+            var tokens = instance.HandleEvent(context, new object());
 
             tokens.Count().Should().Be(2);
 
@@ -162,15 +169,17 @@ namespace TheFlow.Tests.Unit
             
             var instance = ProcessInstance.Create(model.Id);
             
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+
             // start
             instance.HandleEvent(
-                instance.Token.Id, model, new object()
+                context, new object()
             ).Should().BeEquivalentTo(instance.Token);
                 
             // middle
             instance.HandleEvent(
-                instance.Token.Id, model, new object()
-            ).Should().BeEquivalentTo(instance.Token);
+                context, new object()
+            ).Should().BeEmpty();
                 
             instance.IsRunning.Should().BeFalse();
             instance.IsDone.Should().BeTrue();
@@ -189,7 +198,9 @@ namespace TheFlow.Tests.Unit
                 .AddSequenceFlow("start", "a1", "a2", "a3", "end");
                 
             var instance = ProcessInstance.Create(model.Id);
-            instance.HandleEvent(model, new object());
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+
+            instance.HandleEvent(context, new object());
 
             instance.IsDone.Should().BeTrue();
             instance.IsRunning.Should().BeFalse();
@@ -211,8 +222,10 @@ namespace TheFlow.Tests.Unit
             
             var instance = ProcessInstance.Create(model.Id);
             
-            instance.HandleEvent(model, new object());
-            instance.HandleEvent(model, new object());
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+
+            instance.HandleEvent(context, new object());
+            instance.HandleEvent(context, new object());
             
             count.Should().Be(3);
         }
@@ -226,7 +239,9 @@ namespace TheFlow.Tests.Unit
                 .AddSequenceFlow("start", "end");
 
             var instance = ProcessInstance.Create(model.Id);
-            instance.HandleEvent(model, new object());
+            var context = new ExecutionContext(null, model, instance, instance.Token, null);
+
+            instance.HandleEvent(context, new object());
 
             instance.Token.WasReleased.Should().BeTrue();
             instance.Token.IsActive.Should().BeFalse();
@@ -250,27 +265,29 @@ namespace TheFlow.Tests.Unit
             var processInstance = ProcessInstance.Create(model.Id);
 
             // nothing happens
-            processInstance.HandleEvent(model, new object());
+            var context = new ExecutionContext(null, model, processInstance, processInstance.Token, null);
+
+            processInstance.HandleEvent(context, new object());
             processInstance.Token.ExecutionPoint.Should().BeNull();
 
-            processInstance.HandleEvent(model, new Start());
+            processInstance.HandleEvent(context, new Start());
             processInstance.Token.ExecutionPoint.Should().Be("middle1");
-            processInstance.HandleEvent(model, new Start());
-            processInstance.Token.ExecutionPoint.Should().Be("middle1");
-            
-            processInstance.HandleEvent(model, new Middle2());
+            processInstance.HandleEvent(context, new Start());
             processInstance.Token.ExecutionPoint.Should().Be("middle1");
             
-            processInstance.HandleEvent(model, new Middle1());
+            processInstance.HandleEvent(context, new Middle2());
+            processInstance.Token.ExecutionPoint.Should().Be("middle1");
+            
+            processInstance.HandleEvent(context, new Middle1());
             processInstance.Token.ExecutionPoint.Should().Be("middle2");
 
-            processInstance.HandleEvent(model, new Middle1());
+            processInstance.HandleEvent(context, new Middle1());
             processInstance.Token.ExecutionPoint.Should().Be("middle2");
 
-            processInstance.HandleEvent(model, new Middle2());
+            processInstance.HandleEvent(context, new Middle2());
             processInstance.Token.ExecutionPoint.Should().BeNull();
 
-            processInstance.HandleEvent(model, new Middle2());
+            processInstance.HandleEvent(context, new Middle2());
             processInstance.Token.ExecutionPoint.Should().BeNull();
 
             processInstance.History.Count().Should().Be(4);
