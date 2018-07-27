@@ -36,7 +36,7 @@ namespace TheFlow.CoreConcepts
                 throw new InvalidOperationException("AllocationChild is not allowed after releasing.");
             }
             
-            var allocateChild = new Token(
+                var allocateChild = new Token(
                 Id,
                 Guid.NewGuid(),
                 ExecutionPoint

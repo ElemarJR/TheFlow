@@ -44,7 +44,7 @@ namespace TheFlow.Tests.Functional
         }
 
         [Fact]
-        public void ReturnTwoTokensWhenThereIsAnEventHandlerInOneOfThePaths()
+        public void ReturnTwoTokensWhenThereAreEventHandlersInBothPaths()
         {
             var model = ProcessModel.Create()
                 .AddEventCatcher("start")
@@ -69,6 +69,45 @@ namespace TheFlow.Tests.Functional
         
             var result = manager.HandleEvent(null);
             result.FirstOrDefault().AffectedTokens.Count().Should().Be(2);
+        }
+        
+        [Fact]
+        public void ReturnOneTokenWhenThereIsAnEventHandlerInOneOfThePaths()
+        {
+            var model = ProcessModel.Create()
+                .AddEventCatcher("start")
+                .AddActivity("msgBefore", () => { })
+                .AddParallelGateway("split")
+                .AddSequenceFlow("start", "msgBefore", "split")
+                .AddActivity("msgLeft", () => { })
+                .AddEventCatcher("evtLeft")
+                .AddActivity("msgRight", () => { })
+                .AddParallelGateway("join")
+                .AddSequenceFlow("split", "msgLeft", "evtLeft", "join")
+                .AddSequenceFlow("split", "msgRight", "join")
+                .AddActivity("msgAfter", () => { })
+                .AddEventThrower("end")
+                .AddSequenceFlow("join", "msgAfter", "end");
+        
+            var models = new InMemoryProcessModelsStore(model);
+            var instances = new InMemoryProcessInstancesStore();
+            
+            var manager = new ProcessManager(models, instances);
+        
+            var results = manager.HandleEvent(null).ToArray();
+            results.Length.Should().Be(1);
+
+            var result = results[0];
+            var affectedTokens = result.AffectedTokens.ToArray();
+            
+            affectedTokens.Length.Should().Be(1);
+
+            result = manager
+                .HandleEvent(result.ProcessInstanceId, affectedTokens[0], null);
+            //.AffectedTokens.
+
+            var instance = manager.InstancesStore.GetById(result.ProcessInstanceId);
+            instance.IsDone.Should().BeTrue();
         }
     }
 }
