@@ -29,7 +29,11 @@ namespace TheFlow
         public IEnumerable<HandleResult> HandleEvent(object e)
         {
             var models = ModelsStore.GetAll()
-                .Where(model => model.CanStartWith(e));
+                .Where(model =>
+                {
+                    var context = new ExecutionContext(this, model, null, null, null);
+                    return model.CanStartWith(context, e);
+                });
 
             var result = new List<HandleResult>();
 

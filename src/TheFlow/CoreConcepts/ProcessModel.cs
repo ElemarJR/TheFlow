@@ -98,7 +98,6 @@ namespace TheFlow.CoreConcepts
         public static ProcessModel Create() =>
             Create(Guid.NewGuid());
 
-        // TODO: What should we do with a empty guid.
         public static ProcessModel Create(Guid guid)
         {
             if (guid == Guid.Empty)
@@ -113,9 +112,8 @@ namespace TheFlow.CoreConcepts
             );
         }
 
-        // TODO: what pass to the service provider of a starting event?
-        public bool CanStartWith(object eventData) => 
-            GetStartEventCatchers().Any(catcher => catcher.Element.CanHandle(null, eventData));
+        public bool CanStartWith(ExecutionContext context, object eventData) => 
+            GetStartEventCatchers().Any(catcher => catcher.Element.CanHandle(context, eventData));
 
         public ProcessModel GetProcessModel(Guid id) => 
             id == Guid.Parse(Id) ? this : null;

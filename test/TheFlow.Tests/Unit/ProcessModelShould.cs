@@ -126,8 +126,8 @@ namespace TheFlow.Tests.Unit
                 .AddEventThrower("end", SilentEventThrower.Instance)
                 .AddSequenceFlow("start", "end");
 
-            model.CanStartWith(new object()).Should().BeFalse();
-            model.CanStartWith(new Start()).Should().BeTrue();
+            model.CanStartWith(new ExecutionContext(null, null, null, null, null), new object()).Should().BeFalse();
+            model.CanStartWith(new ExecutionContext(null, null, null, null, null), new Start()).Should().BeTrue();
 
         }
 
