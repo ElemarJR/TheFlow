@@ -180,7 +180,7 @@ namespace TheFlow.CoreConcepts
                         break;
                     }
                     default:
-                        throw new NotImplementedException();
+                        throw new NotSupportedException();
                 }
             }
         }
@@ -219,7 +219,7 @@ namespace TheFlow.CoreConcepts
                 // TODO: Move this to the model validation
                 if (connections.Count() != 1)
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
 
                 context.Token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
