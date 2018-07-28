@@ -150,6 +150,13 @@ namespace TheFlow.Tests.Unit
             var element = model.GetElementByName("end")?.Element;
             element.Should().BeOfType<SilentEventThrower>();
         }
+
+        [Fact]
+        public void ThrowArgumentExceptionWhenCreatingWithAnEmptyGuid()
+        {
+            Action sut = () => ProcessModel.Create(Guid.Empty);
+            sut.Should().Throw<ArgumentException>();
+        }
         
     }
 }

@@ -99,11 +99,19 @@ namespace TheFlow.CoreConcepts
             Create(Guid.NewGuid());
 
         // TODO: What should we do with a empty guid.
-        public static ProcessModel Create(Guid guid) => new ProcessModel(
-            guid.ToString(),
-            0,
-            ImmutableList.Create<IProcessElement<IElement>>()
-        );
+        public static ProcessModel Create(Guid guid)
+        {
+            if (guid == Guid.Empty)
+            {
+                throw new ArgumentException("ProcessModel's Id cannot be Empty", nameof(guid));
+            }
+            
+            return new ProcessModel(
+                guid.ToString(),
+                0,
+                ImmutableList.Create<IProcessElement<IElement>>()
+            );
+        }
 
         // TODO: what pass to the service provider of a starting event?
         public bool CanStartWith(object eventData) => 

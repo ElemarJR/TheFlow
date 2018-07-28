@@ -62,11 +62,7 @@ namespace TheFlow.Tests.Unit
             
             Action sut = () => manager.Attach(instance);
 
-            sut.Should().Throw<ArgumentException>()
-                .WithMessage("Trying to attach an instance with an unrecognized model.");
+            sut.Should().Throw<ArgumentException>();
         }
-        
-        
-        
     }
 }
