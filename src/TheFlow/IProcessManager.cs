@@ -12,7 +12,7 @@ namespace TheFlow
 
         string GetExecutionPoint(Guid instanceId, Guid tokenId);
         HandleResult HandleEvent(Guid processInstanceId, Guid tokenId, object eventData);
-        HandleResult HandleActivityCompletation(Guid processInstanceId, Guid tokenId, object completationData);
+        HandleResult HandleActivityCompletion(Guid processInstanceId, Guid tokenId, object completationData);
         
         IEnumerable<HandleResult> HandleEvent(object e);
 

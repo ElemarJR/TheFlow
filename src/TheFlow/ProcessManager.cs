@@ -98,7 +98,7 @@ namespace TheFlow
                 ?.Token.FindById(tokenId)?.ExecutionPoint;
         }
 
-        public HandleResult HandleActivityCompletation(
+        public HandleResult HandleActivityCompletion(
             Guid processInstanceId, 
             Guid tokenId, 
             object completationData
@@ -118,7 +118,7 @@ namespace TheFlow
             
             var context = new ExecutionContext(this, model, instance, instance.Token.FindById(tokenId), null); 
 
-            var tokens = instance.HandleActivityCompletation(context, completationData);
+            var tokens = instance.HandleActivityCompletion(context, completationData);
 
             InstancesStore.Store(instance);
 

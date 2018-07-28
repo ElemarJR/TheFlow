@@ -57,7 +57,7 @@ namespace TheFlow.Elements.Activities
             Action(this, context);
 
             context.Instance
-                .HandleActivityCompletation(context, null);
+                .HandleActivityCompletion(context, null);
         }
 
     }

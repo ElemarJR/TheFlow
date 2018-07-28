@@ -20,7 +20,7 @@ namespace TheFlow.Elements.Gateways
             if (incomingConnections.Length == 1)
             {
                 context.Instance
-                    .HandleActivityCompletation(context.WithRunningElement(null), null);
+                    .HandleActivityCompletion(context.WithRunningElement(null), null);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace TheFlow.Elements.Gateways
 
                     parent.ExecutionPoint = context.Token.ExecutionPoint;
                     context.Instance
-                        .HandleActivityCompletation(
+                        .HandleActivityCompletion(
                             context
                                 .WithRunningElement(null)
                                 .WithToken(parent), 

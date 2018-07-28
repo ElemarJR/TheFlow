@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
-using TheFlow.Infrastructure;
 
 namespace TheFlow.CoreConcepts
 {
@@ -167,28 +164,26 @@ namespace TheFlow.CoreConcepts
                     if (element is Activity a)
                     {
                         
-                        
                         _history.Add(new HistoryItem(
                             DateTime.UtcNow, token.Id, token.ExecutionPoint, null, "activityStarted"
                         ));
-                        
-                        var ctx = new ExecutionContext(
-                            context.ServiceProvider, context.Model, this, token, a
-                            );
 
+                        var ctx = context.WithToken(token).WithRunningElement(a);
                         a.Run(ctx);
                         
                         break;
                     }
-                    else if (element is IEventThrower et)
+
+                    if (element is IEventThrower et)
                     {
                         _history.Add(new HistoryItem(
                             DateTime.UtcNow, 
                             token.Id, token.ExecutionPoint, null, "eventThrown"
                         ));
-                        
-                        
-                        et.Throw(context.WithRunningElement(et));
+
+
+                        var ctx = context.WithToken(token).WithRunningElement(et);
+                        et.Throw(ctx);
                         
                         if (context.Model.IsEndEventThrower(token.ExecutionPoint))
                         {
@@ -219,10 +214,10 @@ namespace TheFlow.CoreConcepts
                     token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
                 }
                 scope?.Dispose();
-            };
+            }
         }
 
-        public IEnumerable<Token> HandleActivityCompletation(ExecutionContext context, object completationData)
+        public IEnumerable<Token> HandleActivityCompletion(ExecutionContext context, object completionData)
         {
             if (!IsRunning)
             {
@@ -242,7 +237,7 @@ namespace TheFlow.CoreConcepts
 
             // TODO: Handle Exceptions
             _history.Add(new HistoryItem(
-                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, completationData, "activityCompleted"
+                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, completionData, "activityCompleted"
             ));
 
             var connections = context.Model
