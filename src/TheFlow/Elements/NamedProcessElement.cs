@@ -1,4 +1,6 @@
-﻿namespace TheFlow.Elements
+﻿using System;
+
+namespace TheFlow.Elements
 {
     public class NamedProcessElement<T>
         : ProcessElement<T>, INamedProcessElement<T> 
@@ -6,14 +8,13 @@
     {
         public string Name { get; }
         
-        // TODO: Validate Name
-
+       
         private NamedProcessElement(
             string name,
             T element
         ) : base(element)
         {
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public new static NamedProcessElement<T> Create(
