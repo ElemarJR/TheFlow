@@ -34,7 +34,7 @@ namespace TheFlow.Elements.Data
 
         public void Clear()
         {
-            throw new System.NotImplementedException();
+            _inner.Clear();
         }
 
         public bool Contains(DataOutput item)

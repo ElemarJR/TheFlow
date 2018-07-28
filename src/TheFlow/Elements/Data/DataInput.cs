@@ -7,6 +7,7 @@ namespace TheFlow.Elements.Data
     {
         public string Name { get; }
 
+        // TODO: Validate the name
         public DataInput(string name)
         {
             Name = name;
