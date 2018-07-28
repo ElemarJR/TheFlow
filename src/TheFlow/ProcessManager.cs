@@ -53,9 +53,19 @@ namespace TheFlow
             return result;
         }
 
-        // TODO: Verify if instance is valid (not null and with a valid model)
         public void Attach(ProcessInstance instance)
         {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            if (ModelsStore.GetById(Guid.Parse(instance.ProcessModelId)) == null)
+            {
+                throw new ArgumentException("Trying to attach an instance with an unrecognized model.", nameof(instance));
+            }
+            
+            
             InstancesStore.Store(instance);
         }
 

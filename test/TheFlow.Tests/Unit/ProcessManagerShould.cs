@@ -31,6 +31,40 @@ namespace TheFlow.Tests.Unit
             manager.HandleEvent(new Start());
             manager.InstancesStore.GetRunningInstancesCount().Should().Be(1);
         }
+
+        [Fact]
+        public void ThrowArgumentNullExceptionWhenTryingToAttachNullInstance()
+        {
+            
+            var manager = new ProcessManager(
+                new InMemoryProcessModelsStore(), 
+                new InMemoryProcessInstancesStore()
+                );
+
+            Action sut = () => manager.Attach(null);
+
+            sut.Should().Throw<ArgumentNullException>();
+        }
+        
+        [Fact]
+        public void ThrowArgumentExceptionWhenTryingToAttachInstanceWithUnrecognizedModel()
+        {
+            var model = ProcessModel.Create()
+                .AddEventCatcher("start")
+                .AddEventThrower("end");
+            
+            var manager = new ProcessManager(
+                new InMemoryProcessModelsStore(), 
+                new InMemoryProcessInstancesStore()
+            );
+
+            var instance = ProcessInstance.Create(model);
+            
+            Action sut = () => manager.Attach(instance);
+
+            sut.Should().Throw<ArgumentException>()
+                .WithMessage("Trying to attach an instance with an unrecognized model.");
+        }
         
         
         
