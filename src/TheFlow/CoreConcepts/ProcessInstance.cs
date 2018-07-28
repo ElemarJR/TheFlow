@@ -171,45 +171,12 @@ namespace TheFlow.CoreConcepts
                         break;
                     case Activity a:
                     {
-                        _history.Add(new HistoryItem(
-                            DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, null, "activityStarted"
-                        ));
-
-                        a.Run(context.WithRunningElement(a));
-
+                        RunActivity(context, logger, a);
                         break;
                     }
                     case IEventThrower et:
                     {
-                        _history.Add(new HistoryItem(
-                            DateTime.UtcNow,
-                            context.Token.Id, context.Token.ExecutionPoint, null, "eventThrown"
-                        ));
-
-                        et.Throw(context.WithRunningElement(et));
-
-                        if (context.Model.IsEndEventThrower(context.Token.ExecutionPoint))
-                        {
-                            context.Token.ExecutionPoint = null;
-                            context.Token.Release();
-                            IsDone = true;
-                        }
-                        else
-                        {
-                            var connections = context.Model.GetOutcomingConnections(
-                                context.Token.ExecutionPoint
-                            ).ToArray();
-
-                            // TODO: Move this to the model validation
-                            if (connections.Count() != 1)
-                            {
-                                throw new NotImplementedException();
-                            }
-
-                            context.Token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
-                            MoveOn(context, logger);
-                        }
-
+                        ThrowEvent(context, logger, et);
                         break;
                     }
                     default:
@@ -218,9 +185,55 @@ namespace TheFlow.CoreConcepts
             }
         }
 
+        private void RunActivity(ExecutionContext context, 
+            ILogger logger,
+            Activity activity)
+        {
+            _history.Add(HistoryItem.Create(context.Token, "activityStarted"));
+
+            logger?.LogInformation($"Activity {context.Token.ExecutionPoint} execution will start now.");
+            activity.Run(context.WithRunningElement(activity));
+        }
+
+        private void ThrowEvent(ExecutionContext context, 
+            ILogger logger, 
+            IEventThrower eventThrower)
+        {
+            _history.Add(HistoryItem.Create(context.Token, "eventThrow"));
+
+            eventThrower.Throw(context.WithRunningElement(eventThrower));
+            logger?.LogInformation($"Event {context.Token.ExecutionPoint} was thrown.");
+
+            if (context.Model.IsEndEventThrower(context.Token.ExecutionPoint))
+            {
+                context.Token.ExecutionPoint = null;
+                context.Token.Release();
+                IsDone = true;
+            }
+            else
+            {
+                var connections = context.Model.GetOutcomingConnections(
+                    context.Token.ExecutionPoint
+                ).ToArray();
+
+                // TODO: Move this to the model validation
+                if (connections.Count() != 1)
+                {
+                    throw new NotImplementedException();
+                }
+
+                context.Token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
+                MoveOn(context, logger);
+            }
+        }
+
 
         public IEnumerable<Token> HandleActivityCompletion(ExecutionContext context, object completionData)
         {
+            
+            var logger = context.ServiceProvider?
+                .GetService<ILogger<ProcessInstance>>();
+
             if (!IsRunning)
             {
                 return Enumerable.Empty<Token>();
@@ -238,9 +251,7 @@ namespace TheFlow.CoreConcepts
             }
 
             // TODO: Handle Exceptions
-            _history.Add(new HistoryItem(
-                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, completionData, "activityCompleted"
-            ));
+            _history.Add(HistoryItem.Create(context.Token, completionData, "activityCompleted"));
 
             var connections = context.Model
                 .GetOutcomingConnections(activity.Name)
@@ -249,9 +260,8 @@ namespace TheFlow.CoreConcepts
             // TODO: Provide a better solution for a bad model structure
             if (!connections.Any())
                 throw new NotSupportedException();
-
             
-            if (connections.Count() > 1)
+            if (connections.Length > 1)
             {
                 
                 MoveOn(context, connections
@@ -266,7 +276,7 @@ namespace TheFlow.CoreConcepts
             else
             {
                 context.Token.ExecutionPoint = connections.First().Element.To;
-                MoveOn(context, new[] { context.Token });
+                MoveOn(context, logger);
                 
             }
             return context.Token.GetActionableTokens();

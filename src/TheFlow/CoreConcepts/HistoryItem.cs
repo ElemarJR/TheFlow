@@ -18,5 +18,11 @@ namespace TheFlow.CoreConcepts
         public string ExecutionPoint { get; }
         public object Payload { get;  }
         public string Action { get; }
+
+        public static HistoryItem Create(Token token, string action)
+            => Create(token, null, action);
+        
+        public static HistoryItem Create(Token token, object payload, string action)
+            => new HistoryItem(DateTime.Now, token.Id, token.ExecutionPoint, payload, action);
     }
 }
