@@ -76,10 +76,8 @@ namespace TheFlow.CoreConcepts
                 .GetService<ILogger<ProcessInstance>>();
             
             logger?.LogInformation($"Handling Event");
-            
-            var token = context.Token;
 
-            if (token == null || !token.IsActive)
+            if (context.Token == null || !context.Token.IsActive)
             {
                 return Enumerable.Empty<Token>();
             }
@@ -91,11 +89,11 @@ namespace TheFlow.CoreConcepts
             {
                 @event = context.Model.GetStartEventCatchers()
                     .FirstOrDefault(e => e.Element.CanHandle(context.WithRunningElement(e.Element), eventData));
-                token.ExecutionPoint = @event?.Name;
+                context.Token.ExecutionPoint = @event?.Name;
             }
             else
             {
-                @event = context.Model.GetElementByName(token.ExecutionPoint)
+                @event = context.Model.GetElementByName(context.Token.ExecutionPoint)
                     as INamedProcessElement<IEventCatcher>;
             }
 
@@ -110,7 +108,7 @@ namespace TheFlow.CoreConcepts
             @event.Element.Handle(ctx, eventData);
             
             _history.Add(new HistoryItem(
-                DateTime.UtcNow, token.Id, token.ExecutionPoint, eventData, "eventCatched"
+                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, eventData, "eventCatched"
                 ));
 
             var connections = ctx.Model
@@ -126,18 +124,18 @@ namespace TheFlow.CoreConcepts
                 return connections
                     .Select(connection =>
                     {
-                        var child = token.AllocateChild();
+                        var child = context.Token.AllocateChild();
                         child.ExecutionPoint = connection.Element.To;
                         return child;
                     })
                     .ToList();
             }
 
-            token.ExecutionPoint = connections.First().Element.To;
+            context.Token.ExecutionPoint = connections.First().Element.To;
 
-            MoveOn(ctx, new[] {token});
+            MoveOn(ctx, new[] {context.Token});
 
-            return token.GetActionableTokens();
+            return context.Token.GetActionableTokens();
         }
 
         private void MoveOn(
@@ -150,72 +148,76 @@ namespace TheFlow.CoreConcepts
     
             foreach (var token in tokens)
             {
-                var scope = logger?.BeginScope($"{token.Id}, {token.ExecutionPoint}");
-                //logger?.LogInformation($"Working on token {token.Id}...");
-
-                while (true)
-                {
-                    // TODO: Ensure model is valid (all connections are valid)
-                    var e = context.Model.GetElementByName(token.ExecutionPoint);
-                    var element = e.Element;
-                    logger?.LogInformation($"Performing {e.Name} ...");
-
-
-                    if (element is Activity a)
-                    {
-                        
-                        _history.Add(new HistoryItem(
-                            DateTime.UtcNow, token.Id, token.ExecutionPoint, null, "activityStarted"
-                        ));
-
-                        var ctx = context.WithToken(token).WithRunningElement(a);
-                        a.Run(ctx);
-                        
-                        break;
-                    }
-
-                    if (element is IEventThrower et)
-                    {
-                        _history.Add(new HistoryItem(
-                            DateTime.UtcNow, 
-                            token.Id, token.ExecutionPoint, null, "eventThrown"
-                        ));
-
-
-                        var ctx = context.WithToken(token).WithRunningElement(et);
-                        et.Throw(ctx);
-                        
-                        if (context.Model.IsEndEventThrower(token.ExecutionPoint))
-                        {
-                            token.ExecutionPoint = null;
-                            token.Release();
-                            IsDone = true;
-                            break;
-                        }
-                    }
-                    else if (element is IEventCatcher)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
-
-                    var connections = context.Model.GetOutcomingConnections(
-                        token.ExecutionPoint
-                    ).ToArray();
-
-                    if (connections.Count() != 1)
-                    {
-                        throw new NotImplementedException();
-                    }
-
-                    token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
-                }
-                scope?.Dispose();
+                MoveOn(context.WithToken(token), logger);
             }
         }
+
+        private void MoveOn(
+            ExecutionContext context, 
+            ILogger logger
+            )
+        {
+            using (logger?.BeginScope($"{context.Token.Id}, {context.Token.ExecutionPoint}"))
+            {
+
+                // TODO: Ensure model is valid (all connections are valid)
+                var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
+                var element = e.Element;
+                logger?.LogInformation($"Performing {e.Name} ...");
+                
+                switch (element)
+                {
+                    case IEventCatcher _:
+                        break;
+                    case Activity a:
+                    {
+                        _history.Add(new HistoryItem(
+                            DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, null, "activityStarted"
+                        ));
+
+                        a.Run(context.WithRunningElement(a));
+
+                        break;
+                    }
+                    case IEventThrower et:
+                    {
+                        _history.Add(new HistoryItem(
+                            DateTime.UtcNow,
+                            context.Token.Id, context.Token.ExecutionPoint, null, "eventThrown"
+                        ));
+
+                        et.Throw(context.WithRunningElement(et));
+
+                        if (context.Model.IsEndEventThrower(context.Token.ExecutionPoint))
+                        {
+                            context.Token.ExecutionPoint = null;
+                            context.Token.Release();
+                            IsDone = true;
+                        }
+                        else
+                        {
+                            var connections = context.Model.GetOutcomingConnections(
+                                context.Token.ExecutionPoint
+                            ).ToArray();
+
+                            // TODO: Move this to the model validation
+                            if (connections.Count() != 1)
+                            {
+                                throw new NotImplementedException();
+                            }
+
+                            context.Token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
+                            MoveOn(context, logger);
+                        }
+
+                        break;
+                    }
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
 
         public IEnumerable<Token> HandleActivityCompletion(ExecutionContext context, object completionData)
         {
