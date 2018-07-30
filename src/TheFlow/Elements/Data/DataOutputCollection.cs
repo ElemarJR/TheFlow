@@ -39,17 +39,17 @@ namespace TheFlow.Elements.Data
 
         public bool Contains(DataOutput item)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void CopyTo(DataOutput[] array, int arrayIndex)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public bool Remove(DataOutput item)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public int Count => _inner.Count;
