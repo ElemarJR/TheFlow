@@ -21,15 +21,15 @@ namespace TheFlow.Tests.Functional
             
             var model = ProcessModel.Create()
                 .AddEventCatcher("start")
-                .AddActivity("msgBefore", () => { e0 = op++;})
+                .AddActivity("msgBefore", () => { e0 = op++;}) // 0+1
                 .AddParallelGateway("split")
                 .AddSequenceFlow("start", "msgBefore", "split")
-                .AddActivity("msgLeft", () => {  e1 =  op++;})
-                .AddActivity("msgRight", () => {  e2 = op++; })
+                .AddActivity("msgLeft", () => {  lock(this) {e1 =  op++;}}) // 1+2
+                .AddActivity("msgRight", () => {  lock(this) {e2 = op++;} }) // 3+3
                 .AddParallelGateway("join")
                 .AddSequenceFlow("split", "msgLeft", "join")
                 .AddSequenceFlow("split", "msgRight", "join")
-                .AddActivity("msgAfter", () => { e3 = op++;})
+                .AddActivity("msgAfter", () => { e3 = op++;}) // 6+4
                 .AddEventThrower("end")
                 .AddSequenceFlow("join", "msgAfter", "end");
         
