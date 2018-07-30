@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
@@ -141,15 +142,15 @@ namespace TheFlow.CoreConcepts
         private void MoveOn(
             ExecutionContext context,
             IEnumerable<Token> tokens
-            )
+        )
         {
             var logger = context.ServiceProvider?
                 .GetService<ILogger<ProcessInstance>>();
-    
-            foreach (var token in tokens)
+
+            Parallel.ForEach(tokens, token =>
             {
                 MoveOn(context.WithToken(token), logger);
-            }
+            });
         }
 
         private void MoveOn(
@@ -163,7 +164,7 @@ namespace TheFlow.CoreConcepts
                 // TODO: Ensure model is valid (all connections are valid)
                 var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
                 var element = e.Element;
-                logger?.LogInformation($"Performing {e.Name} ...");
+                //logger?.LogInformation($"Performing {e.Name} ...");
                 
                 switch (element)
                 {

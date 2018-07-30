@@ -10,17 +10,17 @@ namespace TheFlow
     public class ProcessManager 
         : IProcessManager, IServiceProvider
     {
-        private readonly IServiceCollection _serviceCollection;
+        private readonly IServiceProvider _serviceProvider;
         public IProcessModelsStore ModelsStore { get; }
         public IProcessInstancesStore InstancesStore { get; }
 
         public ProcessManager(
             IProcessModelsStore modelsStore,
             IProcessInstancesStore instancesStore,
-            IServiceCollection serviceCollection = null
+            IServiceProvider serviceProvider = null
             )
         {
-            _serviceCollection = serviceCollection;
+            _serviceProvider = serviceProvider;
             ModelsStore = modelsStore;
             InstancesStore = instancesStore;
 
@@ -80,12 +80,14 @@ namespace TheFlow
         )
         {
             var instance = InstancesStore.GetById(processInstanceId);
+            // TODO: Implement a consistent result (and test it)
             if (instance == null)
             {
                 return null;
             }
 
             var model = ModelsStore.GetById(Guid.Parse(instance.ProcessModelId));
+            // TODO: Implement a consistent result (and test it) 
             if (model == null)
             {
                 throw new InvalidOperationException("Instance process model not found.");
@@ -115,7 +117,7 @@ namespace TheFlow
         public HandleResult HandleActivityCompletion(
             Guid processInstanceId, 
             Guid tokenId, 
-            object completationData
+            object completionData
             )
         {
             var instance = InstancesStore.GetById(processInstanceId);
@@ -132,7 +134,7 @@ namespace TheFlow
             
             var context = new ExecutionContext(this, model, instance, instance.Token.FindById(tokenId), null); 
 
-            var tokens = instance.HandleActivityCompletion(context, completationData);
+            var tokens = instance.HandleActivityCompletion(context, completionData);
 
             InstancesStore.Store(instance);
 
@@ -143,15 +145,20 @@ namespace TheFlow
                 );
         }
 
+        // TODO: Is that used? If yes, test it.
         public object GetService(Type serviceType)
         {
             if (serviceType == typeof(IProcessModelProvider))
+            {
                 return ModelsStore;
+            }
 
             if (serviceType == typeof(IProcessInstanceProvider))
+            {
                 return InstancesStore;
+            }
 
-            return _serviceCollection?.BuildServiceProvider()?.GetService(serviceType);
+            return _serviceProvider?.GetService(serviceType);
         }
     }
 }

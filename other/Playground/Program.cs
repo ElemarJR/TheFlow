@@ -6,6 +6,8 @@ using TheFlow;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
+using TheFlow.Infrastructure;
+using TheFlow.Infrastructure.Parallel;
 using TheFlow.Infrastructure.Stores;
 
 namespace Playground
@@ -43,9 +45,10 @@ namespace Playground
                 config.AddConsole(options => options.IncludeScopes = true);
                 //config
             });
+
+            sc.AddSingleton<IProcessMonitor, InMemoryProcessMonitor>();
             
-            
-            var manager = new ProcessManager(models, instances, sc);
+            var manager = new ProcessManager(models, instances, sc.BuildServiceProvider());
 
             manager.HandleEvent(null);
         }

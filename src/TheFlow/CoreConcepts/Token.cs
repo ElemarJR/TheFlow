@@ -41,9 +41,12 @@ namespace TheFlow.CoreConcepts
                 Guid.NewGuid(),
                 ExecutionPoint
             );
-            
-            _children.Add(allocateChild);
-            
+
+            lock (this)
+            {
+                _children.Add(allocateChild);
+            }
+
             return allocateChild;
         }
 
