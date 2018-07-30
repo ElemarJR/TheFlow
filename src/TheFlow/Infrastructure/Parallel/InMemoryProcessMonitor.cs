@@ -23,14 +23,14 @@ namespace TheFlow.Infrastructure.Parallel
         {
             var lockObject = _lockObjects.GetOrAdd(lockKey, (s) => new object());
             Monitor.Enter(lockObject);
-            _logger?.LogInformation($"Entering {lockKey}...");
+            _logger?.LogDebug($"Entering {lockKey}...");
         }
 
         public void Exit(string lockKey)
         {
             var lockObject = _lockObjects.GetOrAdd(lockKey, (s) => new object());
             Monitor.Exit(lockObject);
-            _logger?.LogInformation($"Exiting {lockKey}...");
+            _logger?.LogDebug($"Exiting {lockKey}...");
         }
 
         public IDisposable Lock(string lockKey)

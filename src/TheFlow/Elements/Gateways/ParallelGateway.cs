@@ -32,7 +32,7 @@ namespace TheFlow.Elements.Gateways
                 var parentToken = context.Instance.Token.FindById(context.Token.ParentId);
 
                 var key = $"{context.Token.ParentId}/{context.Token.ExecutionPoint}";
-                bool readyToGo;
+                var pending = 0;
                 using (processMonitor?.Lock(key))
                 {
                     context.Token.Release();
@@ -40,11 +40,11 @@ namespace TheFlow.Elements.Gateways
                     var actionableChildrenCount = parentToken.Children
                         .SelectMany(c => c.GetActionableTokens())
                         .Count();
-                    
-                    readyToGo = actionableChildrenCount == 0 && childrenCount == incomingConnections.Length;
+
+                    pending = actionableChildrenCount + (incomingConnections.Length - childrenCount);
                 }
 
-                if (readyToGo)
+                if (pending == 0)
                 {
                     logger?.LogInformation($"({context.Token.ExecutionPoint}) All tokens are done. Moving on...");
 
@@ -56,10 +56,6 @@ namespace TheFlow.Elements.Gateways
                                 .WithRunningElement(null)
                                 .WithToken(parentToken), 
                             null);
-                }
-                else
-                {
-                    logger?.LogInformation($"({context.Token.ExecutionPoint}) Still waiting for other descendants...");
                 }
             }
         }

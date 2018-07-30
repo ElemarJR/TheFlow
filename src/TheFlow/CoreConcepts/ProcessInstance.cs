@@ -158,31 +158,28 @@ namespace TheFlow.CoreConcepts
             ILogger logger
             )
         {
-            using (logger?.BeginScope($"{context.Token.Id}, {context.Token.ExecutionPoint}"))
-            {
 
-                // TODO: Ensure model is valid (all connections are valid)
-                var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
-                var element = e.Element;
-                //logger?.LogInformation($"Performing {e.Name} ...");
-                
-                switch (element)
+            // TODO: Ensure model is valid (all connections are valid)
+            var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
+            var element = e.Element;
+            //logger?.LogInformation($"Performing {e.Name} ...");
+            
+            switch (element)
+            {
+                case IEventCatcher _:
+                    break;
+                case Activity a:
                 {
-                    case IEventCatcher _:
-                        break;
-                    case Activity a:
-                    {
-                        RunActivity(context, logger, a);
-                        break;
-                    }
-                    case IEventThrower et:
-                    {
-                        ThrowEvent(context, logger, et);
-                        break;
-                    }
-                    default:
-                        throw new NotSupportedException();
+                    RunActivity(context, logger, a);
+                    break;
                 }
+                case IEventThrower et:
+                {
+                    ThrowEvent(context, logger, et);
+                    break;
+                }
+                default:
+                    throw new NotSupportedException();
             }
         }
 
