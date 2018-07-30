@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Events;
 using TheFlow.Infrastructure.Stores;
@@ -63,6 +64,36 @@ namespace TheFlow.Tests.Unit
             Action sut = () => manager.Attach(instance);
 
             sut.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void ReturnTheProcessModelsStoreWhenRequested()
+        {
+            var models = new InMemoryProcessModelsStore();
+            var instances = new InMemoryProcessInstancesStore();
+            
+            var manager = new ProcessManager(models, instances);
+
+            manager.GetService<IProcessModelsStore>()
+                .Should().Be(models);
+
+            manager.GetService<IProcessModelProvider>()
+                .Should().Be(models);
+        }
+        
+        [Fact]
+        public void ReturnTheProcessInstancesStoreWhenRequested()
+        {
+            var models = new InMemoryProcessModelsStore();
+            var instances = new InMemoryProcessInstancesStore();
+            
+            var manager = new ProcessManager(models, instances);
+
+            manager.GetService<IProcessInstancesStore>()
+                .Should().Be(instances);
+
+            manager.GetService<IProcessInstanceProvider>()
+                .Should().Be(instances);
         }
     }
 }

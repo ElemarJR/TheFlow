@@ -145,7 +145,6 @@ namespace TheFlow
                 );
         }
 
-        // TODO: Is that used? If yes, test it.
         public object GetService(Type serviceType)
         {
             if (serviceType == typeof(IProcessModelProvider))
@@ -154,6 +153,16 @@ namespace TheFlow
             }
 
             if (serviceType == typeof(IProcessInstanceProvider))
+            {
+                return InstancesStore;
+            }
+
+            if (serviceType == typeof(IProcessModelsStore))
+            {
+                return ModelsStore;
+            }
+
+            if (serviceType == typeof(IProcessInstancesStore))
             {
                 return InstancesStore;
             }
