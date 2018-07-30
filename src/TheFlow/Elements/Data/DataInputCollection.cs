@@ -34,22 +34,22 @@ namespace TheFlow.Elements.Data
 
         public void Clear()
         {
-            throw new System.NotImplementedException();
+            throw new System.NotSupportedException();
         }
 
         public bool Contains(DataInput item)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotSupportedException();
         }
 
         public void CopyTo(DataInput[] array, int arrayIndex)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotSupportedException();
         }
 
         public bool Remove(DataInput item)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotSupportedException();
         }
 
         public int Count => _inner.Count;
