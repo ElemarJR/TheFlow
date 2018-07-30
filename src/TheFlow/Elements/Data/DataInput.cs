@@ -7,10 +7,13 @@ namespace TheFlow.Elements.Data
     {
         public string Name { get; }
 
-        // TODO: Validate the name
         public DataInput(string name)
         {
-            Name = name;
+            if (name == string.Empty)
+            {
+                throw new ArgumentException(name);
+            }
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
         
         public void Update(
