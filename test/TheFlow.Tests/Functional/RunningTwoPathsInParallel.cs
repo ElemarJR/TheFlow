@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
+using TheFlow.Infrastructure.Parallel;
 using TheFlow.Infrastructure.Stores;
 using Xunit;
 
@@ -35,8 +37,12 @@ namespace TheFlow.Tests.Functional
         
             var models = new InMemoryProcessModelsStore(model);
             var instances = new InMemoryProcessInstancesStore();
-            
-            var manager = new ProcessManager(models, instances);
+
+            var sc = new ServiceCollection();
+            sc.AddLogging();
+            sc.AddSingleton<IProcessMonitor, InMemoryProcessMonitor>();
+            var sp = sc.BuildServiceProvider();
+            var manager = new ProcessManager(models, instances, sp);
         
             manager.HandleEvent(null);
         
