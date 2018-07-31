@@ -1,21 +1,17 @@
-﻿using System;
+using System;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using TheFlow;
+using FluentAssertions;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
-using TheFlow.Elements.Events;
-using TheFlow.Infrastructure;
-using TheFlow.Infrastructure.Parallel;
 using TheFlow.Infrastructure.Stores;
+using Xunit;
 
-namespace Playground
+namespace TheFlow.Tests.Unit
 {
-    class Program
+    public class UserActivityShould
     {
-        static void Main(string[] args)
+        [Fact]
+        public void PauseTheExecutionOfTheProcess()
         {
             var model = ProcessModel.Create()
                 .AddEventCatcher("start")
@@ -33,7 +29,7 @@ namespace Playground
                 .InstancesStore
                 .GetById(result.ProcessInstanceId);
             
-            Console.WriteLine(instance.IsDone);
+            instance.IsDone.Should().BeFalse();
 
 
             result = manager.HandleActivityCompletion(
@@ -42,7 +38,7 @@ namespace Playground
                 null
             );
 
-            Console.WriteLine(instance.IsDone);
+            instance.IsDone.Should().BeTrue();
         }
     }
 }
