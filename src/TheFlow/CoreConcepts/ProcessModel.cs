@@ -118,9 +118,9 @@ namespace TheFlow.CoreConcepts
         public ProcessModel GetProcessModel(Guid id) => 
             id == Guid.Parse(Id) ? this : null;
 
-        public static ProcessModel CreateWithSingleActivity(LambdaActivity activity) => Create()
-            .AddEventCatcher("start", CatchAnyEventCatcher.Create())
-            .AddActivity("activity", activity)
+        public static ProcessModel CreateWithSingleActivity(Activity activity) => Create()
+            .AddEventCatcher("start", CatchAnyEventCatcher.Create())        
+            .AddActivity("activity", activity)    
             .AddEventThrower("end", SilentEventThrower.Instance)
             .AddSequenceFlow("start", "activity", "end");
         

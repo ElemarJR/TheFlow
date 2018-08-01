@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
+using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
 using TheFlow.Infrastructure.Stores;
 using Xunit;
@@ -94,6 +96,74 @@ namespace TheFlow.Tests.Unit
 
             manager.GetService<IProcessInstanceProvider>()
                 .Should().Be(instances);
+        }
+
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenNonExistentInstanceIdIsInformedToHandleEvent()
+        {
+            var models = new InMemoryProcessModelsStore();
+            var instances = new InMemoryProcessInstancesStore();
+            
+            var manager = new ProcessManager(models, instances);
+
+            Action sut = () => manager.HandleEvent(Guid.NewGuid(), Guid.NewGuid(), null);
+            sut.Should().Throw<InvalidOperationException>();
+        }
+        
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenNonExistentInstanceIdIsInformedToHandleActivityCompletion()
+        {
+            var models = new InMemoryProcessModelsStore();
+            var instances = new InMemoryProcessInstancesStore();
+            
+            var manager = new ProcessManager(models, instances);
+
+            Action sut = () => manager.HandleActivityCompletion(Guid.NewGuid(), Guid.NewGuid(), null);
+            sut.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenNonExistentModelIdIsInformedToHandleEvent()
+        {
+            var model = ProcessModel.CreateWithSingleActivity(
+                new UserActivity()
+            );
+            
+            var models = new InMemoryProcessModelsStore(model);
+            var instances = new InMemoryProcessInstancesStore();
+            var manager = new ProcessManager(models, instances);
+            var result = manager.HandleEvent(null).First();
+            
+            var manager2 = new ProcessManager(
+                new InMemoryProcessModelsStore(),
+                instances
+                );
+
+            Action sut = () => manager2.HandleEvent(result.ProcessInstanceId, Guid.NewGuid(), null);
+
+            sut.Should().Throw<InvalidOperationException>();
+        }
+        
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenNonExistentModelIdIsInformedToHandleActivityCompletion()
+        {
+            var model = ProcessModel.CreateWithSingleActivity(
+                new UserActivity()
+            );
+            
+            var models = new InMemoryProcessModelsStore(model);
+            var instances = new InMemoryProcessInstancesStore();
+            var manager = new ProcessManager(models, instances);
+            var result = manager.HandleEvent(null).First();
+            
+            var manager2 = new ProcessManager(
+                new InMemoryProcessModelsStore(),
+                instances
+            );
+
+            Action sut = () => manager2.HandleActivityCompletion(result.ProcessInstanceId, Guid.NewGuid(), null);
+
+            sut.Should().Throw<InvalidOperationException>();
         }
     }
 }

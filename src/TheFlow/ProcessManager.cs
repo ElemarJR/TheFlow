@@ -80,14 +80,12 @@ namespace TheFlow
         )
         {
             var instance = InstancesStore.GetById(processInstanceId);
-            // TODO: Implement a consistent result (and test it)
             if (instance == null)
             {
-                return null;
+                throw new InvalidOperationException("Instance not found.");
             }
 
             var model = ModelsStore.GetById(Guid.Parse(instance.ProcessModelId));
-            // TODO: Implement a consistent result (and test it) 
             if (model == null)
             {
                 throw new InvalidOperationException("Instance process model not found.");
@@ -123,7 +121,7 @@ namespace TheFlow
             var instance = InstancesStore.GetById(processInstanceId);
             if (instance == null)
             {
-                return null;
+                throw new InvalidOperationException("Instance not found.");
             }
 
             var model = ModelsStore.GetById(Guid.Parse(instance.ProcessModelId));
