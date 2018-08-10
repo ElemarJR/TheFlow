@@ -7,13 +7,18 @@ namespace TheFlow.Elements.Data
 {
     public class DataOutputCollection : ICollection<DataOutput>
     {
-        private readonly List<DataOutput> _inner = new List<DataOutput>();
+        private readonly List<DataOutput> _inner = new List<DataOutput> { new DataOutput("default")};
         
         public IEnumerator<DataOutput> GetEnumerator() => 
             _inner.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() 
             => _inner.GetEnumerator();
+        
+        public DataOutput this[string name]
+        {
+            get { return _inner.First(i => i.Name == name); }
+        }
 
         
         public void Add(DataOutput item)

@@ -20,7 +20,7 @@ namespace TheFlow.Elements.Events
             _dataOutput?.Update(context, context.Token.ExecutionPoint, @event);
         }
         
-        private DataOutput _dataOutput;
+        private DataOutput _dataOutput = new DataOutput("default");
 
         public void SetEventDataOutput(DataOutput dataOutput)
         {

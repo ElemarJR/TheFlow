@@ -8,13 +8,20 @@ namespace TheFlow.Tests.Unit
     public class DataOutputCollectionShould
     {
         [Fact]
+        public void HaveDefault()
+        {
+            var sut = new DataOutputCollection();
+            sut["default"].Should().NotBeNull();
+        }
+        
+        [Fact]
         public void AddDataOutputs()
         {
             var sut = new DataOutputCollection
             {
                 new DataOutput("a"), "b"
             };
-            sut.Count.Should().Be(2);
+            sut.Count.Should().Be(3);
         }
         
         [Fact]

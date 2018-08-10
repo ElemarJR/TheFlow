@@ -24,6 +24,12 @@ namespace TheFlow.Elements.Data
             object newValue
             )
         {
+
+            if (Name == "default" && context.Token != null)
+            {
+                context.Token.LastDefaultOutput = newValue;
+            }
+            
             var allAssociations = context.Model.Elements
                 .OfType<INamedProcessElement<DataAssociation>>();
             

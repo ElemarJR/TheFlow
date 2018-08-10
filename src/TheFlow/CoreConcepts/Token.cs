@@ -9,6 +9,7 @@ namespace TheFlow.CoreConcepts
         public Guid ParentId { get;  }
         public Guid Id { get; }
         public string ExecutionPoint { get; set; }
+        public object LastDefaultOutput { get; set; }
 
         private readonly List<Token> _children;
         
@@ -20,12 +21,15 @@ namespace TheFlow.CoreConcepts
             Guid parentId,
             Guid id,
             string executionPoint, 
-            IEnumerable<Token> children = null
+            IEnumerable<Token> children = null,
+            object lastDefaultOutput = null
             )
         {
             ParentId = parentId;
             Id = id;
             ExecutionPoint = executionPoint;
+            LastDefaultOutput = lastDefaultOutput;
+            
             _children = children?.ToList() ?? new List<Token>();
         }
 

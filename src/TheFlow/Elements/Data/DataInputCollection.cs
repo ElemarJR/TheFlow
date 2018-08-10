@@ -7,7 +7,7 @@ namespace TheFlow.Elements.Data
 {
     public class DataInputCollection : ICollection<DataInput>
     {
-        private readonly List<DataInput> _inner = new List<DataInput>();
+        private readonly List<DataInput> _inner = new List<DataInput> { new DataInput("default")};
         
         public IEnumerator<DataInput> GetEnumerator() => 
             _inner.GetEnumerator();
@@ -29,6 +29,11 @@ namespace TheFlow.Elements.Data
             }
 
             _inner.Add(item);
+        }
+
+        public DataInput this[string name]
+        {
+            get { return _inner.First(i => i.Name == name); }
         }
        
 

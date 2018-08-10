@@ -131,12 +131,13 @@ namespace TheFlow.CoreConcepts
                     })
                     .ToList();
             }
-
-            context.Token.ExecutionPoint = connections.First().Element.To;
-
-            MoveOn(ctx, new[] {context.Token});
-
-            return context.Token.GetActionableTokens();
+            else
+            {
+                context.Token.ExecutionPoint = connections.First().Element.To;
+                MoveOn(ctx, new[] {context.Token});
+                return context.Token.GetActionableTokens();
+                
+            }
         }
 
         private void MoveOn(
@@ -147,10 +148,18 @@ namespace TheFlow.CoreConcepts
             var logger = context.ServiceProvider?
                 .GetService<ILogger<ProcessInstance>>();
 
-            Parallel.ForEach(tokens, token =>
+            var enumerable = tokens as Token[] ?? tokens.ToArray();
+            if (enumerable.Count() == 1)
             {
-                MoveOn(context.WithToken(token), logger);
-            });
+                MoveOn(context.WithToken(enumerable.First()), logger);
+            }
+            else
+            {
+                Parallel.ForEach(enumerable, token =>
+                {
+                    MoveOn(context.WithToken(token), logger);
+                });
+            }
         }
 
         private void MoveOn(
@@ -263,11 +272,27 @@ namespace TheFlow.CoreConcepts
             {
                 
                 MoveOn(context, connections
+                    .Where(connection =>
+                    {
+                        if (!connection.Element.HasFilterValue)
+                        {
+                            return true;
+                        }
+
+                        if (connection.Element.FilterValue == null)
+                        {
+                            return context.Token.LastDefaultOutput == null;
+                        }
+
+                        return connection.Element.FilterValue.Equals(
+                            context.Token.LastDefaultOutput
+                        );
+                    })
                     .Select(connection =>
                     {
                         var child = context.Token.AllocateChild();
                         child.ExecutionPoint = connection.Element.To;
-                        
+
                         return child;
                     }));
             }

@@ -4,5 +4,9 @@
     {
         string From { get; }
         string To { get; }
+        
+        object FilterValue { get; }
+        bool HasFilterValue { get; }
+
     }
 }
