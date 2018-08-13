@@ -12,10 +12,10 @@ public static class Program
         var output = false;
         var model = ProcessModel.Create()
             .AddEventCatcher("start")
-            .AddXorGateway("If")
+            .AddExclusiveGateway("If")
             .AddActivity("True", () => output = true)
             .AddActivity("False", () => output = false)
-            .AddXorGateway("EndIf")
+            .AddExclusiveGateway("EndIf")
             .AddEventThrower("end")
             .AddSequenceFlow("start", "If")
             .AddConditionalSequenceFlow("If", "True", true)

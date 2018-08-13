@@ -3,7 +3,7 @@ using TheFlow.Elements.Activities;
 
 namespace TheFlow.Elements.Gateways
 {
-    public class XorGateway : Activity
+    public class ExclusiveGateway : Activity
     {
         public override void Run(ExecutionContext context)
         {

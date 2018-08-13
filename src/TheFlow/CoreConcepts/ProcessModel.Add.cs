@@ -70,8 +70,8 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddParallelGateway(string name)
             => AddElement(NamedProcessElement<ParallelGateway>.Create(name, new ParallelGateway()));
 
-        public ProcessModel AddXorGateway(string name)
-            => AddElement(NamedProcessElement<XorGateway>.Create(name, new XorGateway()));
+        public ProcessModel AddExclusiveGateway(string name)
+            => AddElement(NamedProcessElement<ExclusiveGateway>.Create(name, new ExclusiveGateway()));
 
         public ProcessModel AddActivity(string name, Action activity)
             => AddActivity(name, LambdaActivity.Create(activity));
