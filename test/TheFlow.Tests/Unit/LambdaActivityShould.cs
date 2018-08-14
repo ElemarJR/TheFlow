@@ -1,9 +1,7 @@
 ﻿using System;
 using FluentAssertions;
-using Moq;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
-using TheFlow.Infrastructure.Stores;
 using Xunit;
 
 namespace TheFlow.Tests.Unit
