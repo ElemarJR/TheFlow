@@ -52,10 +52,18 @@ namespace TheFlow.Elements.Activities
             ExecutionContext context
             )
         {
-            Action(this, context);
+            try
+            {
+                Action(this, context);
+                context.Instance
+                    .HandleActivityCompletion(context, null);
+            }
+            catch (Exception e)
+            {
+                context.Instance
+                    .HandleActivityFailure(context, e);
+            }
 
-            context.Instance
-                .HandleActivityCompletion(context, null);
         }
 
     }

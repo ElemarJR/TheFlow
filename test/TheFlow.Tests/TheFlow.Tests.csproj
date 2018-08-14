@@ -7,6 +7,7 @@
     <PackageReference Include="coveralls.io" Version="1.4.2" />
     <PackageReference Include="FluentAssertions" Version="5.4.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="Moq" Version="4.9.0" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.core" Version="2.4.0" />

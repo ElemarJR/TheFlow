@@ -33,7 +33,5 @@ public static class Program
         var manager = new ProcessManager(models, instances, sc.BuildServiceProvider());
 
         manager.HandleEvent(true);
-        
-        Console.WriteLine(output);
     }
 }

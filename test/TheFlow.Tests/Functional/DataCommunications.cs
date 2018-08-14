@@ -1,15 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using FluentAssertions;
-using TheFlow;
+﻿using FluentAssertions;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Data;
 using TheFlow.Elements.Events;
 using TheFlow.Infrastructure.Stores;
 using Xunit;
-
-using static System.Console;
 
 namespace TheFlow.Tests.Functional
 {

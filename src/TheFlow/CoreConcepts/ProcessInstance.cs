@@ -260,13 +260,28 @@ namespace TheFlow.CoreConcepts
             }
         }
 
+        // TODO: Improve compensation
+        public IEnumerable<Token> HandleActivityFailure(ExecutionContext context, object failureData)
+        {
+            var ca = context.Model.Associations
+                .Where(association => association.AssociationType == AssociationType.Compensation)
+                .Select(association => context.Model.GetElementByName(association.FirstElement))
+                .Select(element => element.Element)
+                ;
+
+            foreach (var association in ca)
+            {
+                if (association is Activity a)
+                {
+                    a.Run(context);
+                }
+            }
+
+            return context.Token.GetActionableTokens();
+        }
 
         public IEnumerable<Token> HandleActivityCompletion(ExecutionContext context, object completionData)
         {
-            
-            var logger = context.ServiceProvider?
-                .GetService<ILogger<ProcessInstance>>();
-
             if (!IsRunning)
             {
                 return Enumerable.Empty<Token>();
@@ -324,8 +339,11 @@ namespace TheFlow.CoreConcepts
             else
             {
                 context.Token.ExecutionPoint = connections.First().Element.To;
+
+                var logger = context.ServiceProvider?
+                    .GetService<ILogger<ProcessInstance>>();
                 MoveOn(context, logger);
-                
+
             }
             return context.Token.GetActionableTokens();
         }

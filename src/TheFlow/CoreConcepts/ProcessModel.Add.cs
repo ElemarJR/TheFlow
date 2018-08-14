@@ -13,22 +13,27 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddNullElement(string name, NullElement n)
             => AddElement(NamedProcessElement<NullElement>.Create(name, n));
 
-        public ProcessModel AddEventCatcher(string name) 
+        public ProcessModel AddEventCatcher(string name)
             => AddEventCatcher(name, CatchAnyEventCatcher.Create());
 
         public ProcessModel AddEventCatcher(string name, IEventCatcher catcher)
             => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
-        
-        public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher) 
-            => AddElement(catcher); 
+
+        public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher)
+            => AddElement(catcher);
+
+        public ProcessModel AddBoundaryEventCatcher(
+            NamedProcessElement<IEventCatcher> catcher,
+            string activityName
+        ) => AddElement(catcher);
 
         public ProcessModel AddEventThrower(string name)
             => AddEventThrower(name, SilentEventThrower.Instance);
-        
+
         public ProcessModel AddEventThrower(string name, IEventThrower thrower)
             => AddEventThrower(NamedProcessElement<IEventThrower>.Create(name, thrower));
-        
-        public ProcessModel AddEventThrower(NamedProcessElement<IEventThrower> thrower) 
+
+        public ProcessModel AddEventThrower(NamedProcessElement<IEventThrower> thrower)
             => AddElement(thrower);
 
         // validate null
@@ -42,7 +47,7 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddSequenceFlow(
             string from,
             string to,
-            params string []  path)
+            params string[] path)
         {
             var result = AddSequenceFlow(SequenceFlow.Create(from, to));
             from = to;
@@ -53,20 +58,20 @@ namespace TheFlow.CoreConcepts
             }
             return result;
         }
-            
+
 
         public ProcessModel AddSequenceFlow(SequenceFlow sequenceFlow)
             => AddSequenceFlow(ProcessElement<SequenceFlow>.Create(sequenceFlow));
-        
+
         public ProcessModel AddSequenceFlow(ProcessElement<SequenceFlow> sequenceFlow)
             => AddElement(sequenceFlow);
 
         public ProcessModel AddActivity(string name, Activity activity)
             => AddElement(ProcessElement<Activity>.Create(name, activity));
-        
-        public ProcessModel AddActivity(NamedProcessElement<Activity> activity) 
+
+        public ProcessModel AddActivity(NamedProcessElement<Activity> activity)
             => AddElement(activity);
-        
+
         public ProcessModel AddParallelGateway(string name)
             => AddElement(NamedProcessElement<ParallelGateway>.Create(name, new ParallelGateway()));
 
@@ -79,9 +84,15 @@ namespace TheFlow.CoreConcepts
 
         public ProcessModel AddConditionalSequenceFlow(string @from, string @to, object filterValue)
             => AddElement(ProcessElement<SequenceFlow>.Create(SequenceFlow.Create(@from, @to, filterValue)));
-        
-        private ProcessModel AddElement(IProcessElement<IElement> element)
-            => new ProcessModel(Id, Version + 1, Elements.Add(element));
 
+        private ProcessModel AddElement(IProcessElement<IElement> element)
+            => new ProcessModel(Id, Version + 1, Elements.Add(element), Associations);
+
+        public ProcessModel AttachAsCompensationActivity(string compensationActivityName, string regularActivityName)
+            => new ProcessModel(Id, Version + 1, Elements, Associations.Add(new Association(
+                compensationActivityName,
+                regularActivityName,
+                AssociationType.Compensation
+            )));
     }
 }

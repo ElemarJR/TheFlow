@@ -119,6 +119,15 @@ namespace TheFlow
                 ?.Token.FindById(tokenId)?.ExecutionPoint;
         }
 
+        public HandleResult HandleActivityFailure(
+            Guid processInstanceId,
+            Guid tokenId,
+            object failureData
+        )
+        {
+            throw new NotImplementedException();
+        }
+
         public HandleResult HandleActivityCompletion(
             Guid processInstanceId, 
             Guid tokenId, 
