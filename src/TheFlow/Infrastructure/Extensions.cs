@@ -17,11 +17,17 @@ namespace TheFlow
         {
             for (var i = 0; i < elements.Count - 1; i++)
             {
-                if (!(elements[i] is INamedProcessElement<IElement> left)) continue;
+                if (!(elements[i] is INamedProcessElement<IElement> left))
+                {
+                    continue;
+                }
 
                 for (var j = i + 1; j < elements.Count; j++)
                 {
-                    if (!(elements[j] is INamedProcessElement<IElement> right)) continue;
+                    if (!(elements[j] is INamedProcessElement<IElement> right))
+                    {
+                        continue;
+                    }
 
                     if (left.Name.Equals(right.Name))
                     {

@@ -23,7 +23,7 @@ namespace TheFlow.Notifications.Application.Infrastructure.Idempotency
             lock (_lockObject)
             {
                 _innerQueue.Enqueue(obj);
-                while (_innerQueue.Count > Limit && _innerQueue.TryDequeue(out T _)) ;
+                while (_innerQueue.Count > Limit && _innerQueue.TryDequeue(out T _)) { }
             }
         }
 

@@ -33,6 +33,7 @@ namespace TheFlow.CoreConcepts
             _children = children?.ToList() ?? new List<Token>();
         }
 
+        private object _lockObject = new object();
         public Token AllocateChild()
         {
             if (WasReleased)
@@ -46,7 +47,7 @@ namespace TheFlow.CoreConcepts
                 ExecutionPoint
             );
 
-            lock (this)
+            lock (_lockObject)
             {
                 _children.Add(allocateChild);
             }
@@ -57,7 +58,6 @@ namespace TheFlow.CoreConcepts
         public void Release()
         {
             WasReleased = true;
-            //ParentId?._children.Remove(this);
         }
 
         public static Token Create()
@@ -80,9 +80,17 @@ namespace TheFlow.CoreConcepts
 
         public IEnumerable<Token> GetActionableTokens()
         {
-            if (IsActive == false) return Enumerable.Empty<Token>();
+            if (IsActive == false)
+            {
+                return Enumerable.Empty<Token>();
+            }
+
             var actionableChildren = _children.SelectMany(c => c.GetActionableTokens()).ToArray();
-            if (actionableChildren.Length != 0) return actionableChildren;
+            if (actionableChildren.Length != 0)
+            {
+                return actionableChildren;
+            }
+
             return new[] {this};
         }
 

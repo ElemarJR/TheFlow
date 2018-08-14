@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
-using TheFlow.Elements.Activities;
 using TheFlow.Infrastructure.Parallel;
 using TheFlow.Infrastructure.Stores;
 using Xunit;
@@ -20,14 +18,16 @@ namespace TheFlow.Tests.Functional
             var e1 = 0;
             var e2 = 0;
             var e3 = 0;
+
+            var lockObject = new object();
             
             var model = ProcessModel.Create()
                 .AddEventCatcher("start")
                 .AddActivity("msgBefore", () => { e0 = op++;}) // 0+1
                 .AddParallelGateway("split")
                 .AddSequenceFlow("start", "msgBefore", "split")
-                .AddActivity("msgLeft", () => {  lock(this) {e1 =  op++;}}) // 1+2
-                .AddActivity("msgRight", () => {  lock(this) {e2 = op++;} }) // 3+3
+                .AddActivity("msgLeft", () => {  lock(lockObject) {e1 =  op++;}}) // 1+2
+                .AddActivity("msgRight", () => {  lock(lockObject) {e2 = op++;} }) // 3+3
                 .AddParallelGateway("join")
                 .AddSequenceFlow("split", "msgLeft", "join")
                 .AddSequenceFlow("split", "msgRight", "join")

@@ -20,9 +20,16 @@ namespace TheFlow.Notifications.Application.Infrastructure.Mediatr.Commands
             _requestManager = requestManager;
         }
 
+        public Task<TResult> Handle(
+            IdentifiedCommand<TCommand, TResult> message
+        )
+        {
+            return Handle(message, new CancellationToken());
+        }
+
         public async Task<TResult> Handle(
             IdentifiedCommand<TCommand, TResult> message,
-            CancellationToken cancellationToken = default(CancellationToken)
+            CancellationToken cancellationToken
         )
         {
             if (message.Id == Guid.Empty)

@@ -27,7 +27,7 @@ namespace TheFlow.Tests.Unit
         [Fact]
         public void ThrowAnInvalidOperationExceptionWhenAddingTwoInputsWithTheSameKey()
         {
-            Action sut = () => { new DataInputCollection() {"a", "a"}; };
+            Action sut = () => { new DataInputCollection {"a", "a"}; };
             sut.Should().Throw<InvalidOperationException>();
         }
 

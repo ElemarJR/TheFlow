@@ -11,11 +11,11 @@ namespace TheFlow.Elements.Activities
         public abstract void Run(
             ExecutionContext context 
             );
-        
-        public  readonly DataOutputCollection Outputs = new DataOutputCollection();
-        public readonly DataInputCollection Inputs = new DataInputCollection();
 
-        
+        public DataOutputCollection Outputs { get; } = new DataOutputCollection();
+        public DataInputCollection Inputs { get; } = new DataInputCollection();
+
+
         public DataOutput GetDataOutputByName(string name) 
             => Outputs.FirstOrDefault(o => o.Name == name);
 
