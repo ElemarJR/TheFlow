@@ -1,5 +1,4 @@
-﻿using System;
-using TheFlow.CoreConcepts;
+﻿using TheFlow.CoreConcepts;
 
 namespace TheFlow.Elements.Events
 {
@@ -11,8 +10,10 @@ namespace TheFlow.Elements.Events
         
         public static readonly SilentEventThrower Instance = 
             new SilentEventThrower();
-        
+
         public void Throw(ExecutionContext context)
-        {}
+        {
+            // This implementation will not throw any event. It is silent!
+        }
     }
 }
