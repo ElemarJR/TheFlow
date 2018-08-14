@@ -13,7 +13,7 @@ namespace TheFlow.Elements.Events
 
         public void Throw(ExecutionContext context)
         {
-            // This implementation will not throw any event. It is silent!
+        // This implementation will not throw any event. It is silent!
         }
     }
 }
