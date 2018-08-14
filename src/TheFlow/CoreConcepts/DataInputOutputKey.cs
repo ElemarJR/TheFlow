@@ -23,8 +23,12 @@ namespace TheFlow.CoreConcepts
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is DataInputOutputKey && Equals((DataInputOutputKey) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            return obj is DataInputOutputKey key && Equals(key);
         }
 
         public override int GetHashCode()

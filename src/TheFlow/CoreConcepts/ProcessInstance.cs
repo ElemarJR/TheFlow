@@ -142,7 +142,9 @@ namespace TheFlow.CoreConcepts
 
             // TODO: Provide a better solution for a bad model structure
             if (!connections.Any())
+            {
                 throw new NotSupportedException();
+            }
 
             if (connections.Count() > 1)
             {
@@ -275,8 +277,7 @@ namespace TheFlow.CoreConcepts
                 return Enumerable.Empty<Token>();
             }
 
-            if (!(context.Model.GetElementByName(context.Token.ExecutionPoint) 
-                is INamedProcessElement<Activity> activity))
+            if (!(context.Model.GetElementByName(context.Token.ExecutionPoint) is INamedProcessElement<Activity> activity))
             {
                 return Enumerable.Empty<Token>();
             }

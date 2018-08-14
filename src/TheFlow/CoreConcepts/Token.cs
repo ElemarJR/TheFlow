@@ -20,9 +20,26 @@ namespace TheFlow.CoreConcepts
         public Token(
             Guid parentId,
             Guid id,
+            string executionPoint
+        ) : this(parentId, id, executionPoint, null)
+        {
+        }
+
+        public Token(
+            Guid parentId,
+            Guid id,
             string executionPoint, 
-            IEnumerable<Token> children = null,
-            object lastDefaultOutput = null
+            IEnumerable<Token> children
+        ) : this(parentId, id, executionPoint, children, null)
+        {
+        }
+
+        public Token(
+            Guid parentId,
+            Guid id,
+            string executionPoint, 
+            IEnumerable<Token> children,
+            object lastDefaultOutput
             )
         {
             ParentId = parentId;
@@ -33,7 +50,7 @@ namespace TheFlow.CoreConcepts
             _children = children?.ToList() ?? new List<Token>();
         }
 
-        private object _lockObject = new object();
+        private readonly object _lockObject = new object();
         public Token AllocateChild()
         {
             if (WasReleased)
