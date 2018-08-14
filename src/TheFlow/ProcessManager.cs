@@ -16,8 +16,15 @@ namespace TheFlow
 
         public ProcessManager(
             IProcessModelsStore modelsStore,
+            IProcessInstancesStore instancesStore
+        ) : this(modelsStore, instancesStore, null)
+        {
+        }
+
+        public ProcessManager(
+            IProcessModelsStore modelsStore,
             IProcessInstancesStore instancesStore,
-            IServiceProvider serviceProvider = null
+            IServiceProvider serviceProvider
             )
         {
             _serviceProvider = serviceProvider;

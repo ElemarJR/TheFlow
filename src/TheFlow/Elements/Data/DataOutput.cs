@@ -45,11 +45,10 @@ namespace TheFlow.Elements.Data
                 // TODO: Target not found?
                 var consumerElement = context.Model.GetElementByName(association.DataConsumerName)
                     ?.Element as IDataConsumer;
-                var input = consumerElement.GetDataInputByName(association.InputName);
-                
-                input.Update(context, association.DataConsumerName, newValue);
+                var input = consumerElement?.GetDataInputByName(association.InputName);
+
+                input?.Update(context, association.DataConsumerName, newValue);
             }
-            //_subscriptions.ForEach(s => s(newValue));
         }
 
         public DataOutput GetDataOutputByName(string name) 

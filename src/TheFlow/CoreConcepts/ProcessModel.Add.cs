@@ -20,7 +20,7 @@ namespace TheFlow.CoreConcepts
             => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
         
         public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher) 
-            => AddElement(catcher);
+            => AddElement(catcher); 
 
         public ProcessModel AddEventThrower(string name)
             => AddEventThrower(name, SilentEventThrower.Instance);

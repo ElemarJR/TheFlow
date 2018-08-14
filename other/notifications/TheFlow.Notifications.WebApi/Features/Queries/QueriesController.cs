@@ -67,9 +67,9 @@ namespace TheFlow.Notifications.WebApi.Features.Queries
 
     public class MessageViewModel
     {
-        public string From;
-        public DateTime When;
-        public string Message;
-        public string ActionUrl;
+        public string From { get; set; }
+        public DateTime When { get; set; }
+        public string Message { get; set; }
+        public string ActionUrl { get; set; }
     }
 }

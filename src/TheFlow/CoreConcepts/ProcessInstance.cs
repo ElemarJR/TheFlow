@@ -24,10 +24,34 @@ namespace TheFlow.CoreConcepts
         // TODO: Test serialization with RavenDB
         public ProcessInstance(
             string processModelId,
+            string id
+        ) : this(processModelId, id, null)
+        {
+        }
+
+        public ProcessInstance(
+            string processModelId,
             string id,
-            Token token = null,
-            IEnumerable<HistoryItem> history = null,
-            IDictionary<DataInputOutputKey, object> elementsState = null
+            Token token
+        ) : this(processModelId, id, token, null)
+        {
+        }
+
+        public ProcessInstance(
+            string processModelId,
+            string id,
+            Token token,
+            IEnumerable<HistoryItem> history
+        ) : this(processModelId, id, token, history, null)
+        {
+        }
+
+        public ProcessInstance(
+            string processModelId,
+            string id,
+            Token token,
+            IEnumerable<HistoryItem> history,
+            IDictionary<DataInputOutputKey, object> elementsState
             )
         {
             

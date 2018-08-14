@@ -11,7 +11,9 @@ namespace TheFlow.Notifications.Application.Infrastructure.Idempotency
 
         public int Limit { get; }
 
-        public CircularQueue(int limit = 1000)
+        public CircularQueue() : this(1000) {}
+
+        public CircularQueue(int limit)
         {
             Limit = limit;
         }

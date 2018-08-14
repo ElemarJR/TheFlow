@@ -52,8 +52,6 @@ namespace TheFlow.Elements.Activities
             ExecutionContext context
             )
         {
-            var model = context.Model;
-
             Action(this, context);
 
             context.Instance
