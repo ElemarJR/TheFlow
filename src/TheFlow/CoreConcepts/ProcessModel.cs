@@ -103,13 +103,14 @@ namespace TheFlow.CoreConcepts
             {
                 throw new ArgumentException("ProcessModel's Id cannot be Empty", nameof(guid));
             }
-            
+
             return new ProcessModel(
                 guid.ToString(),
                 0,
                 ImmutableList.Create<IProcessElement<IElement>>(),
                 ImmutableList.Create<Association>()
             );
+            
         }
 
         public bool CanStartWith(ExecutionContext context, object eventData) => 

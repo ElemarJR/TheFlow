@@ -88,11 +88,43 @@ namespace TheFlow.CoreConcepts
         private ProcessModel AddElement(IProcessElement<IElement> element)
             => new ProcessModel(Id, Version + 1, Elements.Add(element), Associations);
 
-        public ProcessModel AttachAsCompensationActivity(string compensationActivityName, string regularActivityName)
-            => new ProcessModel(Id, Version + 1, Elements, Associations.Add(new Association(
-                compensationActivityName,
-                regularActivityName,
-                AssociationType.Compensation
-            )));
+        // TODO: Ensure that COMPENSATION has no incoming or outcoming sequence flow 
+        public ProcessModel AttachAsCompensationActivity(string compensation, string to)
+        {
+            var that = this;
+
+            if (that.GetElementByName("__compensation_start__") == null)
+            {
+                that = that
+                    .AddParallelGateway("__compensation_start__")
+                    .AddParallelGateway("__compensation_end__")
+                    .AddEventThrower("__process_failure__")
+                    .AddSequenceFlow("__compensation_end__", "__process_failure__")
+                    ;
+            }
+
+
+            var preifname = $"__compensation_pre_if_{to}__";
+            var ifname = $"__compensation_if_{to}_was_completed__";
+            var endifname = $"__compensation_endif_{to}_was_completed__";
+
+            return new ProcessModel(Id, that.Version + 1, that.Elements, that.Associations.Add(new Association(
+                    compensation,
+                    to,
+                    AssociationType.Compensation
+                )))
+                .AddActivity(preifname, LambdaActivity.Create((act, ctx) =>
+                    {
+                        var shouldRun = ctx.Instance.WasActivityCompleted(to);
+                        act.GetDataOutputByName("default").Update(ctx, ctx.Token.ExecutionPoint, shouldRun);
+                    }))
+                .AddExclusiveGateway(ifname)
+                .AddExclusiveGateway(endifname)
+                .AddSequenceFlow("__compensation_start__", preifname, ifname)
+                .AddConditionalSequenceFlow(ifname, compensation, true)
+                .AddSequenceFlow(compensation, endifname)
+                .AddConditionalSequenceFlow(ifname, endifname, false)
+                .AddSequenceFlow(endifname, "__compensation_end__");
+        }
     }
 }

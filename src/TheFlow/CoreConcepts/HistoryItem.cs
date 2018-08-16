@@ -25,4 +25,12 @@ namespace TheFlow.CoreConcepts
         public static HistoryItem Create(Token token, object payload, string action)
             => new HistoryItem(DateTime.Now, token.Id, token.ExecutionPoint, payload, action);
     }
+
+    public static class HistoryItemActions
+    {
+        public static readonly string EventThrown = "eventThrown";
+        public static readonly string ActitvityStarted = "activityStarted";
+        public static readonly string ActivityCompleted = "activityCompleted";
+        public static readonly string EventCatched = "eventCatched";
+    }
 }

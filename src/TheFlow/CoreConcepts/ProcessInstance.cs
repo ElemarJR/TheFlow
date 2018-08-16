@@ -133,7 +133,7 @@ namespace TheFlow.CoreConcepts
             @event.Element.Handle(ctx, eventData);
             
             _history.Add(new HistoryItem(
-                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, eventData, "eventCatched"
+                DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, eventData, HistoryItemActions.EventCatched 
                 ));
 
             var connections = ctx.Model
@@ -197,7 +197,6 @@ namespace TheFlow.CoreConcepts
             // TODO: Ensure model is valid (all connections are valid)
             var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
             var element = e.Element;
-            //logger?.LogInformation($"Performing {e.Name} ...");
             
             switch (element)
             {
@@ -222,7 +221,7 @@ namespace TheFlow.CoreConcepts
             ILogger logger,
             Activity activity)
         {
-            _history.Add(HistoryItem.Create(context.Token, "activityStarted"));
+            _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.ActitvityStarted));
 
             logger?.LogInformation($"Activity {context.Token.ExecutionPoint} execution will start now.");
             activity.Run(context.WithRunningElement(activity));
@@ -232,7 +231,7 @@ namespace TheFlow.CoreConcepts
             ILogger logger, 
             IEventThrower eventThrower)
         {
-            _history.Add(HistoryItem.Create(context.Token, "eventThrow"));
+            _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.EventThrown));
 
             eventThrower.Throw(context.WithRunningElement(eventThrower));
             logger?.LogInformation($"Event {context.Token.ExecutionPoint} was thrown.");
@@ -250,7 +249,7 @@ namespace TheFlow.CoreConcepts
                 ).ToArray();
 
                 // TODO: Move this to the model validation
-                if (connections.Count() != 1)
+                if (connections.Length != 1)
                 {
                     throw new NotSupportedException();
                 }
@@ -260,23 +259,15 @@ namespace TheFlow.CoreConcepts
             }
         }
 
-        // TODO: Improve compensation
+        // TODO: Invalidate parallel tokens (?!)
+        // TODO: Wait for pending tokens (?!)
         public IEnumerable<Token> HandleActivityFailure(ExecutionContext context, object failureData)
         {
-            var ca = context.Model.Associations
-                .Where(association => association.AssociationType == AssociationType.Compensation)
-                .Select(association => context.Model.GetElementByName(association.FirstElement))
-                .Select(element => element.Element)
-                ;
+            var logger = context.ServiceProvider?
+                .GetService<ILogger<ProcessInstance>>();
 
-            foreach (var association in ca)
-            {
-                if (association is Activity a)
-                {
-                    a.Run(context);
-                }
-            }
-
+            context.Token.ExecutionPoint = "__compensation_start__";
+            MoveOn(context, logger);
             return context.Token.GetActionableTokens();
         }
 
@@ -298,7 +289,7 @@ namespace TheFlow.CoreConcepts
             }
 
             // TODO: Handle Exceptions
-            _history.Add(HistoryItem.Create(context.Token, completionData, "activityCompleted"));
+            _history.Add(HistoryItem.Create(context.Token, completionData, HistoryItemActions.ActivityCompleted));
 
             var connections = context.Model
                 .GetOutcomingConnections(activity.Name)
@@ -353,5 +344,13 @@ namespace TheFlow.CoreConcepts
                 ? this 
                 : null;
 
+        public bool WasActivityCompleted(string activityId)
+        {
+            var result = _history.Any(item =>
+                item.ExecutionPoint == activityId &&
+                item.Action == HistoryItemActions.ActivityCompleted
+            );
+            return result;
+        }
     }
 }
