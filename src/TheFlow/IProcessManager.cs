@@ -13,7 +13,8 @@ namespace TheFlow
         string GetExecutionPoint(Guid instanceId, Guid tokenId);
         HandleResult HandleEvent(Guid processInstanceId, Guid tokenId, object eventData);
         HandleResult HandleActivityCompletion(Guid processInstanceId, Guid tokenId, object completionData);
-        
+        HandleResult HandleActivityFailure(Guid processInstanceId, Guid tokenId, object failureData);
+
         IEnumerable<HandleResult> HandleEvent(object e);
 
         void Attach(ProcessInstance instance);

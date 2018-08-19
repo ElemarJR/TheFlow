@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Xml.Schema;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Connections;
-using TheFlow.Elements.Data;
 using TheFlow.Elements.Events;
 
 namespace TheFlow.CoreConcepts
@@ -17,12 +15,14 @@ namespace TheFlow.CoreConcepts
         public int Version { get; }
         
         public ImmutableList<IProcessElement<IElement>> Elements { get; }
+        public ImmutableList<Association> Associations { get; }
 
         #region Constructor and Empty Object
         public ProcessModel(
             string id,
             int version,
-            ImmutableList<IProcessElement<IElement>> elements)
+            ImmutableList<IProcessElement<IElement>> elements,
+            ImmutableList<Association> associations)
         {
             if (elements.HasDuplicatedNames())
             {
@@ -31,6 +31,7 @@ namespace TheFlow.CoreConcepts
             Id = id;
             Version = version;
             Elements = elements;
+            Associations = associations ?? ImmutableList.Create<Association>();
         }
         
 //        
@@ -39,8 +40,6 @@ namespace TheFlow.CoreConcepts
 //        );  
         #endregion
         
-                
-
         public IEnumerable<IProcessElement<IConnectionElement>> GetIncomingConnections(
             string elementName
         )
@@ -104,12 +103,14 @@ namespace TheFlow.CoreConcepts
             {
                 throw new ArgumentException("ProcessModel's Id cannot be Empty", nameof(guid));
             }
-            
+
             return new ProcessModel(
                 guid.ToString(),
                 0,
-                ImmutableList.Create<IProcessElement<IElement>>()
+                ImmutableList.Create<IProcessElement<IElement>>(),
+                ImmutableList.Create<Association>()
             );
+            
         }
 
         public bool CanStartWith(ExecutionContext context, object eventData) => 

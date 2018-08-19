@@ -22,7 +22,7 @@ namespace TheFlow.Elements.Gateways
                 .ToArray();
             
             
-            if (incomingConnections.Length == 1)
+            if (incomingConnections.Length <= 1)
             {
                 context.Instance
                     .HandleActivityCompletion(context.WithRunningElement(null), null);
