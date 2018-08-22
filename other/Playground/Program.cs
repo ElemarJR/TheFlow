@@ -2,42 +2,39 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Raven.Client.Documents;
 using TheFlow;
 using TheFlow.CoreConcepts;
 using TheFlow.Infrastructure.Stores;
+using TheFlow.Infrastructure.Stores.InstancesStore.RavenDB;
 
 public static class Program
 {
     public static void Main()
     {
-        var e1 = false;
-        var e2 = false;
-        var e3 = false;
+        var store = new DocumentStore
+        {
+            Database = "TheFlow",
+            Urls = new[] {"http://localhost:8080"}
+        };
+        store.Initialize();
 
-        var model = ProcessModel.Create()
-            .AddEventCatcher("start")
-            .AddActivity("a1", () => { })
-            .AddActivity("c1", () => e1 = true)
-            .AttachAsCompensationActivity("c1", "a1")
-            .AddActivity("a2", () => throw new Exception())
-            .AddActivity("c2", () => e2 = true)
-            .AttachAsCompensationActivity("c2", "a2")
-            .AddActivity("a3", () => { })
-            .AddActivity("c3", () => e3 = true)
-            .AttachAsCompensationActivity("c3", "a3")
-            .AddEventThrower("end")
-            .AddSequenceFlow("start", "a1", "a2", "a3", "end");
+        var monitor = new RavenDbProcessMonitor(store);
 
-        var models = new InMemoryProcessModelsStore(model);
-        var instances = new InMemoryProcessInstancesStore();
+        while (true)
+        {
+            Console.WriteLine("Press ENTER to lock..");
+            Console.ReadLine();
+            Console.WriteLine("Waiting for the lock...");
 
-        var sc = new ServiceCollection();
-        sc.AddLogging(cfg => { cfg.AddConsole(); });
+            using (var lockObject = monitor.Lock("sample/resource"))
+            {
+                Console.WriteLine("Locked..");
+                Console.WriteLine("Press ENTER to release..");
+                Console.ReadLine();
+            }
 
-        var manager = new ProcessManager(models, instances, sc.BuildServiceProvider());
-        var result = manager.HandleEvent(null).First();
-
-        var relatedInstance = manager.InstancesStore.GetById(result.ProcessInstanceId);
-        
+            Console.WriteLine("Released...");
+        }
     }
 }

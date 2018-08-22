@@ -4,8 +4,8 @@ namespace TheFlow.Infrastructure.Parallel
 {
     public interface IProcessMonitor
     {
-        void Enter(string lockKey);
-        void Exit(string lockKey);
+        long Enter(string lockKey);
+        void Exit(string lockKey, long lockIndex);
         IDisposable Lock(string lockKey);
     }
 }

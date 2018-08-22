@@ -19,14 +19,15 @@ namespace TheFlow.Infrastructure.Parallel
         private readonly ConcurrentDictionary<string, object> _lockObjects;
             
         
-        public void Enter(string lockKey)
+        public long Enter(string lockKey)
         {
             var lockObject = _lockObjects.GetOrAdd(lockKey, (s) => new object());
             Monitor.Enter(lockObject);
             _logger?.LogDebug($"Entering {lockKey}...");
+            return 0;
         }
 
-        public void Exit(string lockKey)
+        public void Exit(string lockKey, long lockIndex)
         {
             var lockObject = _lockObjects.GetOrAdd(lockKey, (s) => new object());
             Monitor.Exit(lockObject);
