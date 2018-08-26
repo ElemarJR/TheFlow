@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TheFlow.Elements.Activities;
+using TheFlow.Elements.ConnectionsSelectors;
 using TheFlow.Elements.Events;
 
 namespace TheFlow.CoreConcepts
@@ -11,7 +12,7 @@ namespace TheFlow.CoreConcepts
     partial class ProcessInstance
     {
         private void ContinueExecutionFromTheContextPoint(
-            ExecutionContext context 
+            ExecutionContext context
         )
         {
             var logger = context.ServiceProvider?
@@ -20,26 +21,26 @@ namespace TheFlow.CoreConcepts
             // TODO: Ensure model is valid (all connections are valid)
             var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
             var element = e.Element;
-            
+
             switch (element)
             {
                 case IEventCatcher _:
                     break;
                 case Activity a:
-                {
-                    _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.ActitvityStarted));
-                    logger?.LogInformation($"Activity {context.Token.ExecutionPoint} execution will start now.");
-                    a.Run(context.WithRunningElement(a));
-                    break;
-                }
+                    {
+                        _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.ActitvityStarted));
+                        logger?.LogInformation($"Activity {context.Token.ExecutionPoint} execution will start now.");
+                        a.Run(context.WithRunningElement(a));
+                        break;
+                    }
                 case IEventThrower et:
-                {
-                    _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.EventThrown));
-                    et.Throw(context.WithRunningElement(et));
-                    logger?.LogInformation($"Event {context.Token.ExecutionPoint} was thrown.");
-                    ContinueExecutionFromTheContextPointConnections(context);
-                    break;
-                }
+                    {
+                        _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.EventThrown));
+                        et.Throw(context.WithRunningElement(et));
+                        logger?.LogInformation($"Event {context.Token.ExecutionPoint} was thrown.");
+                        ContinueExecutionFromTheContextPointConnections(context);
+                        break;
+                    }
                 default:
                     throw new NotSupportedException();
             }
@@ -50,7 +51,7 @@ namespace TheFlow.CoreConcepts
             IEnumerable<Token> tokens
         )
         {
-            
+
             var enumerable = tokens as Token[] ?? tokens.ToArray();
             if (enumerable.Length == 1)
             {
@@ -77,8 +78,13 @@ namespace TheFlow.CoreConcepts
             }
             else
             {
-                var connections = context.Model
-                    .GetOutcomingConnections(context.Token.ExecutionPoint)
+
+                var selector =
+                    context.Model.GetElementByName(context.Token.ExecutionPoint).Element as IConnectionsSelector
+                    ?? DefaultConnectionsSelector.Instance;
+
+                var connections = selector
+                    .GetRunnableConnections(context)
                     .ToArray();
 
                 // TODO: Provide a better solution for a bad model structure
@@ -87,29 +93,11 @@ namespace TheFlow.CoreConcepts
 
                 if (connections.Length > 1)
                 {
-                    // TODO: Implement some kind of "selector" in the gateway
                     ContinueExecutionForAllTokensInParallel(context, connections
-                        .Where(connection =>
-                        {
-                            if (!connection.Element.HasFilterValue)
-                            {
-                                return true;
-                            }
-
-                            if (connection.Element.FilterValue == null)
-                            {
-                                return context.Token.LastDefaultOutput == null;
-                            }
-
-                            return connection.Element.FilterValue.Equals(
-                                context.Token.LastDefaultOutput
-                            );
-                        })
                         .Select(connection =>
                         {
                             var child = context.Token.AllocateChild();
                             child.ExecutionPoint = connection.Element.To;
-
                             return child;
                         }));
                 }
@@ -117,7 +105,6 @@ namespace TheFlow.CoreConcepts
                 {
                     context.Token.ExecutionPoint = connections.First().Element.To;
                     ContinueExecutionFromTheContextPoint(context);
-
                 }
             }
 

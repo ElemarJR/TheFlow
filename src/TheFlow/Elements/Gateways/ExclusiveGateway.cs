@@ -1,10 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
+using TheFlow.Elements.Connections;
+using TheFlow.Elements.ConnectionsSelectors;
 
 namespace TheFlow.Elements.Gateways
 {
     // TODO: Ensure there is a single path (first to run)
-    public class ExclusiveGateway : Activity
+    public class ExclusiveGateway : Activity, IConnectionsSelector
     {
         public override void Run(ExecutionContext context)
         {
@@ -12,8 +16,13 @@ namespace TheFlow.Elements.Gateways
                 .HandleActivityCompletion(
                     context
                         .WithRunningElement(null)
-                        , 
+                        ,
                     null);
         }
+
+        public IEnumerable<IProcessElement<IConnectionElement>> GetRunnableConnections(ExecutionContext context)
+            => DefaultConnectionsSelector.Instance
+                .GetRunnableConnections(context)
+                .Take(1);
     }
 }
