@@ -28,67 +28,6 @@ namespace TheFlow.CoreConcepts
             var key = new DataInputOutputKey(elementName, inputName);
             _elementsState[key] = value;
         }
-        
-        
-        private void ContinueExecutionForAllTokensInParallel(
-            ExecutionContext context,
-            IEnumerable<Token> tokens
-        )
-        {
-            
-            var enumerable = tokens as Token[] ?? tokens.ToArray();
-            if (enumerable.Length == 1)
-            {
-                ContinueExecutionFromTheContextPoint(context.WithToken(enumerable[0]));
-            }
-            else
-            {
-                Parallel.ForEach(enumerable, token =>
-                {
-                    ContinueExecutionFromTheContextPoint(context.WithToken(token));
-                });
-            }
-        }
-
-        private void ContinueExecutionFromTheContextPoint(
-            ExecutionContext context 
-            )
-        {
-            var logger = context.ServiceProvider?
-                .GetService<ILogger<ProcessInstance>>();
-
-            // TODO: Ensure model is valid (all connections are valid)
-            var e = context.Model.GetElementByName(context.Token.ExecutionPoint);
-            var element = e.Element;
-            
-            switch (element)
-            {
-                case IEventCatcher _:
-                    break;
-                case Activity a:
-                {
-                    RunActivity(context, logger, a);
-                    break;
-                }
-                case IEventThrower et:
-                {
-                    ThrowEvent(context, logger, et);
-                    break;
-                }
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
-        private void RunActivity(ExecutionContext context, 
-            ILogger logger,
-            Activity activity)
-        {
-            _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.ActitvityStarted));
-
-            logger?.LogInformation($"Activity {context.Token.ExecutionPoint} execution will start now.");
-            activity.Run(context.WithRunningElement(activity));
-        }
 
         private void ThrowEvent(ExecutionContext context, 
             ILogger logger, 
@@ -107,18 +46,7 @@ namespace TheFlow.CoreConcepts
             }
             else
             {
-                var connections = context.Model.GetOutcomingConnections(
-                    context.Token.ExecutionPoint
-                ).ToArray();
-
-                // TODO: Move this to the model validation
-                if (connections.Length != 1)
-                {
-                    throw new NotSupportedException();
-                }
-
-                context.Token.ExecutionPoint = connections.FirstOrDefault()?.Element.To;
-                ContinueExecutionFromTheContextPoint(context);
+                ContinueExecutionFromTheContextPointConnections(context);
             }
         }
     }

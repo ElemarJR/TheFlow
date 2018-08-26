@@ -54,35 +54,6 @@ namespace TheFlow.CoreConcepts
                 DateTime.UtcNow, context.Token.Id, context.Token.ExecutionPoint, eventData, HistoryItemActions.EventCatched
                 ));
 
-            //var connections = ctx.Model
-            //    .GetOutcomingConnections(@event.Name)
-            //    .ToArray();
-
-            //// TODO: Provide a better solution for a bad model structure
-            //if (!connections.Any())
-            //{
-            //    throw new NotSupportedException();
-            //}
-
-            //if (connections.Length > 1)
-            //{
-            //    return connections
-            //        .Select(connection =>
-            //        {
-            //            var child = context.Token.AllocateChild();
-            //            child.ExecutionPoint = connection.Element.To;
-            //            return child;
-            //        })
-            //        .ToList();
-            //}
-            //else
-            //{
-            //    context.Token.ExecutionPoint = connections.First().Element.To;
-            //    ContinueExecutionForAllTokensInParallel(ctx, new[] { context.Token });
-            //    return context.Token.GetActionableTokens();
-
-            //}
-
             return ContinueExecutionFromTheContextPointConnections(context);
         }
 
@@ -101,7 +72,7 @@ namespace TheFlow.CoreConcepts
                 return Enumerable.Empty<Token>();
             }
 
-            if (!(context.Model.GetElementByName(context.Token.ExecutionPoint) is INamedProcessElement<Activity> activity))
+            if (!(context.Model.GetElementByName(context.Token.ExecutionPoint) is INamedProcessElement<Activity>))
             {
                 return Enumerable.Empty<Token>();
             }
@@ -112,60 +83,8 @@ namespace TheFlow.CoreConcepts
             return ContinueExecutionFromTheContextPointConnections(context);
         }
 
-        private IEnumerable<Token> ContinueExecutionFromTheContextPointConnections(
-            ExecutionContext context
-            )
-        {
-            var connections = context.Model
-                .GetOutcomingConnections(context.Token.ExecutionPoint)
-                .ToArray();
-
-            // TODO: Provide a better solution for a bad model structure
-            if (!connections.Any())
-                throw new NotSupportedException();
-
-            if (connections.Length > 1)
-            {
-
-                ContinueExecutionForAllTokensInParallel(context, connections
-                    .Where(connection =>
-                    {
-                        if (!connection.Element.HasFilterValue)
-                        {
-                            return true;
-                        }
-
-                        if (connection.Element.FilterValue == null)
-                        {
-                            return context.Token.LastDefaultOutput == null;
-                        }
-
-                        return connection.Element.FilterValue.Equals(
-                            context.Token.LastDefaultOutput
-                        );
-                    })
-                    .Select(connection =>
-                    {
-                        var child = context.Token.AllocateChild();
-                        child.ExecutionPoint = connection.Element.To;
-
-                        return child;
-                    }));
-            }
-            else
-            {
-                context.Token.ExecutionPoint = connections.First().Element.To;
-                ContinueExecutionFromTheContextPoint(context);
-
-            }
-            return context.Token.GetActionableTokens();
-        }
-
         public IEnumerable<Token> HandleActivityFailure(ExecutionContext context, object failureData)
         {
-            var logger = context.ServiceProvider?
-                .GetService<ILogger<ProcessInstance>>();
-
             context.Token.ExecutionPoint = "__compensation_start__";
             ContinueExecutionFromTheContextPoint(context);
             return context.Token.GetActionableTokens();
