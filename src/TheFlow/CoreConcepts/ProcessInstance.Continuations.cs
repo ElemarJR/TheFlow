@@ -87,7 +87,7 @@ namespace TheFlow.CoreConcepts
 
                 if (connections.Length > 1)
                 {
-
+                    // TODO: Implement some kind of "selector" in the gateway
                     ContinueExecutionForAllTokensInParallel(context, connections
                         .Where(connection =>
                         {

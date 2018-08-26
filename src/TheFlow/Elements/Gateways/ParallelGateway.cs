@@ -8,7 +8,7 @@ namespace TheFlow.Elements.Gateways
 {
     public class ParallelGateway : Activity
     {
-        // TODO: Run in Parallel
+        // TODO: Support multiple input connections and multiple output connections
         public override void Run(ExecutionContext context)
         {
             var processMonitor = context.ServiceProvider
