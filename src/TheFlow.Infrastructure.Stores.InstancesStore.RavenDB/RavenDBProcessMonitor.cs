@@ -6,7 +6,11 @@ using TheFlow.Infrastructure.Parallel;
 
 namespace TheFlow.Infrastructure.Stores.InstancesStore.RavenDB
 {
-    public class DistributedLockObject {}
+    public class DistributedLockObject
+    {
+        public DateTime? ExpiresAt { get; set; }
+    }
+
     public class RavenDbProcessMonitor : IProcessMonitor
     {
         private readonly IDocumentStore _documentStore;
@@ -20,7 +24,12 @@ namespace TheFlow.Infrastructure.Stores.InstancesStore.RavenDB
         {
             while (true)
             {
-                var lockObject = new DistributedLockObject();
+                var now = DateTime.UtcNow;
+
+                var lockObject = new DistributedLockObject
+                {
+                    ExpiresAt = DateTime.UtcNow + TimeSpan.FromMinutes(5)
+                };
 
                 var result = _documentStore.Operations.Send(
                     new PutCompareExchangeValueOperation<DistributedLockObject>(
@@ -33,6 +42,18 @@ namespace TheFlow.Infrastructure.Stores.InstancesStore.RavenDB
                     return result.Index;
                 }
 
+                if (result.Value.ExpiresAt < now)
+                {
+                    // Time expired - Update the existing key with the new value
+                    var takeLockWithTimeoutResult = _documentStore.Operations.Send(
+                        new PutCompareExchangeValueOperation<DistributedLockObject>(lockKey, lockObject, result.Index));
+
+                    if (takeLockWithTimeoutResult.Successful)
+                    {
+                        return takeLockWithTimeoutResult.Index;
+                    }
+                }
+                
                 // Wait a little bit and retry
                 Thread.Sleep(20);
             }

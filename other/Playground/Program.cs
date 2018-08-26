@@ -1,40 +1,38 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
-using TheFlow;
-using TheFlow.CoreConcepts;
-using TheFlow.Infrastructure.Stores;
 using TheFlow.Infrastructure.Stores.InstancesStore.RavenDB;
 
-public static class Program
+namespace Playground
 {
-    public static void Main()
+    public static class Program
     {
-        var store = new DocumentStore
+        public static void Main()
         {
-            Database = "TheFlow",
-            Urls = new[] {"http://localhost:8080"}
-        };
-        store.Initialize();
-
-        var monitor = new RavenDbProcessMonitor(store);
-
-        while (true)
-        {
-            Console.WriteLine("Press ENTER to lock..");
-            Console.ReadLine();
-            Console.WriteLine("Waiting for the lock...");
-
-            using (var lockObject = monitor.Lock("sample/resource"))
+            var store = new DocumentStore
             {
-                Console.WriteLine("Locked..");
-                Console.WriteLine("Press ENTER to release..");
-                Console.ReadLine();
-            }
+                Database = "TheFlow",
+                Urls = new[] {"http://localhost:8080"}
+            };
+            store.Initialize();
 
-            Console.WriteLine("Released...");
+            var monitor = new RavenDbProcessMonitor(store);
+
+            while (true)
+            {
+                Console.WriteLine("Press ENTER to lock..");
+                Console.ReadLine();
+                Console.WriteLine("Waiting for the lock...");
+
+                using (monitor.Lock("sample/resource"))
+                {
+                    Console.WriteLine("Locked..");
+                    Console.WriteLine("Press ENTER to release..");
+                    Console.ReadLine();
+                }
+
+                Console.WriteLine("Released...");
+            }
+            // ReSharper disable once FunctionNeverReturns
         }
     }
 }
