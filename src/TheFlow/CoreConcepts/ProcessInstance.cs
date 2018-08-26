@@ -28,26 +28,5 @@ namespace TheFlow.CoreConcepts
             var key = new DataInputOutputKey(elementName, inputName);
             _elementsState[key] = value;
         }
-
-        private void ThrowEvent(ExecutionContext context, 
-            ILogger logger, 
-            IEventThrower eventThrower)
-        {
-            _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.EventThrown));
-
-            eventThrower.Throw(context.WithRunningElement(eventThrower));
-            logger?.LogInformation($"Event {context.Token.ExecutionPoint} was thrown.");
-
-            if (context.Model.IsEndEventThrower(context.Token.ExecutionPoint))
-            {
-                context.Token.ExecutionPoint = null;
-                context.Token.Release();
-                IsDone = true;
-            }
-            else
-            {
-                ContinueExecutionFromTheContextPointConnections(context);
-            }
-        }
     }
 }

@@ -34,7 +34,10 @@ namespace TheFlow.CoreConcepts
                 }
                 case IEventThrower et:
                 {
-                    ThrowEvent(context, logger, et);
+                    _history.Add(HistoryItem.Create(context.Token, HistoryItemActions.EventThrown));
+                    et.Throw(context.WithRunningElement(et));
+                    logger?.LogInformation($"Event {context.Token.ExecutionPoint} was thrown.");
+                    ContinueExecutionFromTheContextPointConnections(context);
                     break;
                 }
                 default:
@@ -66,48 +69,58 @@ namespace TheFlow.CoreConcepts
             ExecutionContext context
         )
         {
-            var connections = context.Model
-                .GetOutcomingConnections(context.Token.ExecutionPoint)
-                .ToArray();
-
-            // TODO: Provide a better solution for a bad model structure
-            if (!connections.Any())
-                throw new NotSupportedException();
-
-            if (connections.Length > 1)
+            if (context.Model.IsEndEventThrower(context.Token.ExecutionPoint))
             {
-
-                ContinueExecutionForAllTokensInParallel(context, connections
-                    .Where(connection =>
-                    {
-                        if (!connection.Element.HasFilterValue)
-                        {
-                            return true;
-                        }
-
-                        if (connection.Element.FilterValue == null)
-                        {
-                            return context.Token.LastDefaultOutput == null;
-                        }
-
-                        return connection.Element.FilterValue.Equals(
-                            context.Token.LastDefaultOutput
-                        );
-                    })
-                    .Select(connection =>
-                    {
-                        var child = context.Token.AllocateChild();
-                        child.ExecutionPoint = connection.Element.To;
-
-                        return child;
-                    }));
+                context.Token.ExecutionPoint = null;
+                context.Token.Release();
+                IsDone = true;
             }
             else
             {
-                context.Token.ExecutionPoint = connections.First().Element.To;
-                ContinueExecutionFromTheContextPoint(context);
+                var connections = context.Model
+                    .GetOutcomingConnections(context.Token.ExecutionPoint)
+                    .ToArray();
 
+                // TODO: Provide a better solution for a bad model structure
+                if (!connections.Any())
+                    throw new NotSupportedException();
+
+                if (connections.Length > 1)
+                {
+
+                    ContinueExecutionForAllTokensInParallel(context, connections
+                        .Where(connection =>
+                        {
+                            if (!connection.Element.HasFilterValue)
+                            {
+                                return true;
+                            }
+
+                            if (connection.Element.FilterValue == null)
+                            {
+                                return context.Token.LastDefaultOutput == null;
+                            }
+
+                            return connection.Element.FilterValue.Equals(
+                                context.Token.LastDefaultOutput
+                            );
+                        })
+                        .Select(connection =>
+                        {
+                            var child = context.Token.AllocateChild();
+                            child.ExecutionPoint = connection.Element.To;
+
+                            return child;
+                        }));
+                }
+                else
+                {
+                    context.Token.ExecutionPoint = connections.First().Element.To;
+                    ContinueExecutionFromTheContextPoint(context);
+
+                }
             }
+
             return context.Token.GetActionableTokens();
         }
     }
