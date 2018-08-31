@@ -124,6 +124,6 @@ namespace TheFlow.CoreConcepts
             .AddActivity("activity", activity)    
             .AddEventThrower("end", SilentEventThrower.Instance)
             .AddSequenceFlow("start", "activity", "end");
-        
+
     }
 }

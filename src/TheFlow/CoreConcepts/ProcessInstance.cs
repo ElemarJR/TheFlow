@@ -14,6 +14,8 @@ namespace TheFlow.CoreConcepts
         private readonly List<HistoryItem> _history;
         public IEnumerable<HistoryItem> History => _history;
 
+        public IDictionary<string, object> EmbeddedDataStoresValues { get; }
+
 
         public void SetDataInputValue(
             string elementName, string inputName, object value

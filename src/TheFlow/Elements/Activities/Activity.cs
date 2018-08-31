@@ -15,7 +15,6 @@ namespace TheFlow.Elements.Activities
         public DataOutputCollection Outputs { get; } = new DataOutputCollection();
         public DataInputCollection Inputs { get; } = new DataInputCollection();
 
-
         public DataOutput GetDataOutputByName(string name) 
             => Outputs.FirstOrDefault(o => o.Name == name);
 

@@ -12,7 +12,7 @@ namespace TheFlow.Tests.Functional
     public class HelloWorld
     {
         [Fact]
-        public void BasicSetup()
+        public void Event_Activity_End()
         {
             var passed = false;
             var model = ProcessModel.Create()

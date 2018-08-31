@@ -19,6 +19,18 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddEventCatcher(string name, IEventCatcher catcher)
             => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
 
+        public ProcessModel AddEventCatcher<TEvent>()
+            where TEvent : class
+            => AddEventCatcher<TEvent>($"On{typeof(TEvent).Name}");
+
+        public ProcessModel AddEventCatcher<TEvent>(string name)
+            where TEvent : class
+        {
+            var eventCatcher = new TypedEventCatcher<TEvent>();
+            var element = NamedProcessElement<IEventCatcher>.Create(name, eventCatcher);
+            return AddEventCatcher(element);
+        }
+
         public ProcessModel AddEventCatcher(NamedProcessElement<IEventCatcher> catcher)
             => AddElement(catcher);
 
@@ -71,6 +83,19 @@ namespace TheFlow.CoreConcepts
 
         public ProcessModel AddActivity(NamedProcessElement<Activity> activity)
             => AddElement(activity);
+
+        public ProcessModel AddActivity<TActivity>()
+            where TActivity : Activity
+        {
+            var name = typeof(TActivity).Name;
+            if (name.EndsWith("Activity"))
+            {
+                name = name.Substring(0, name.Length - "Activity".Length);
+            }
+
+            var activity = Activator.CreateInstance<TActivity>();
+            return AddActivity(name, activity);
+        }
 
         public ProcessModel AddParallelGateway(string name)
             => AddElement(NamedProcessElement<ParallelGateway>.Create(name, new ParallelGateway()));
@@ -125,6 +150,14 @@ namespace TheFlow.CoreConcepts
                 .AddSequenceFlow(compensation, endifname)
                 .AddConditionalSequenceFlow(ifname, endifname, false)
                 .AddSequenceFlow(endifname, "__compensation_end__");
+        }
+
+        public ProcessModel AddDataStore<T>(string name)
+        {
+            return AddElement(ProcessElement<EmbeddedDataStore<T>>.Create(
+                name,
+                element: new EmbeddedDataStore<T>(name))
+            );
         }
     }
 }

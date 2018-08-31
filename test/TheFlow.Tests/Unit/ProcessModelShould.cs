@@ -4,6 +4,7 @@ using TheFlow.CoreConcepts;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
+using TheFlow.Tests.Functional.PickingProducts;
 using Xunit;
 
 namespace TheFlow.Tests.Unit
@@ -155,6 +156,24 @@ namespace TheFlow.Tests.Unit
             Action sut = () => ProcessModel.Create(Guid.Empty);
             sut.Should().Throw<ArgumentException>();
         }
-        
+
+        [Fact]
+        public void AddingEventCatcherOnlyWithTypeCreatesAnElementWithLogicalName()
+        {
+            var model = ProcessModel.Create()
+                .AddEventCatcher<ProductOrdered>();
+
+            model.GetElementByName("OnProductOrdered").Should().NotBeNull();
+        }
+
+        [Fact]
+        public void AddingActivityOnlyWithTypeCreatesAnElementWithLogicalName()
+        {
+            var model = ProcessModel.Create()
+                .AddActivity<CheckStockActivity>();
+
+            model.GetElementByName("CheckStock").Should().NotBeNull();
+        }
+
     }
 }

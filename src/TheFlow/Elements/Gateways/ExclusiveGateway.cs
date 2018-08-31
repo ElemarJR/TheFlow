@@ -6,17 +6,13 @@ using TheFlow.Elements.Connections;
 using TheFlow.Elements.ConnectionsSelectors;
 
 namespace TheFlow.Elements.Gateways
-{
-    // TODO: Ensure there is a single path (first to run)
-    public class ExclusiveGateway : Activity, IConnectionsSelector
+{   public class ExclusiveGateway : Activity, IConnectionsSelector
     {
         public override void Run(ExecutionContext context)
         {
             context.Instance
                 .HandleActivityCompletion(
-                    context
-                        .WithRunningElement(null)
-                        ,
+                    context.WithRunningElement(null),
                     null);
         }
 

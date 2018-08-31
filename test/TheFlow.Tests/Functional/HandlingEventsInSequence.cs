@@ -7,7 +7,7 @@ using Xunit;
 
 namespace TheFlow.Tests.Functional
 {
-    public class BasicFlowBasedOnEvents
+    public class HandlingEventsInSequence
     {
         class Start {}
 
