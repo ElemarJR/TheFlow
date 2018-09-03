@@ -48,6 +48,23 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddEventThrower(NamedProcessElement<IEventThrower> thrower)
             => AddElement(thrower);
 
+
+        // TODO: Create a new EventName
+        public ProcessModel AddEventThrower<T>()
+        {
+            var thrower = (IEventThrower) Activator.CreateInstance<T>();
+            var name = typeof(T).Name;
+            if (name.EndsWith("EventThrower"))
+            {
+                name = name.Substring(0, name.Length - "EventThrower".Length);
+            }
+
+            return AddEventThrower(NamedProcessElement<IEventThrower>.Create(name, thrower));
+        }
+
+
+
+
         // validate null
         public ProcessModel AddDataAssociation(
             string name,

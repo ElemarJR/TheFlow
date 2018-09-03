@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using FluentAssertions;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Events;
@@ -7,23 +7,14 @@ using Xunit;
 
 namespace TheFlow.Tests.Unit
 {
-    public class CatchAnyEventCatcherShould
+    public class TypedEventCatcherShould
     {
-        [Fact]
-        public void HaveDefaultOutput()
-        {
-            var catcher = 
-                (CatchAnyEventCatcher) CatchAnyEventCatcher.Create();
-            catcher.GetDataOutputByName("default")
-                .Should().NotBeNull();
-        }
-
         [Theory]
         [InlineData("Hello World")]
         public void SaveEventDataAsDataObject(object data)
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("OnMessageReceived")
+                .AddEventCatcher<string>("OnMessageReceived")
                 .AddEventThrower("GoodBye", SilentEventThrower.Instance)
                 .AddSequenceFlow("OnMessageReceived", "GoodBye");
 

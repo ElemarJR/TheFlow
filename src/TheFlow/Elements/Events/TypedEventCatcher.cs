@@ -13,10 +13,13 @@ namespace TheFlow.Elements.Events
 
         void IEventCatcher.Handle(ExecutionContext context, object @event)
         {
+            context.Instance.SetDataObjectValue(context.Token.ExecutionPoint, @event);
+            _dataOutput?.Update(context, context.Token.ExecutionPoint, @event);
+
             HandleImpl(context, @event as TEvent);
         }
 
-        private DataOutput _dataOutput;
+        private DataOutput _dataOutput = new DataOutput("default");
         void IEventCatcher.SetEventDataOutput(DataOutput dataOutput)
         {
             _dataOutput = dataOutput;
@@ -25,8 +28,13 @@ namespace TheFlow.Elements.Events
         public bool CanHandle(ExecutionContext context,TEvent @event) =>
             CanHandleImpl(context, @event);
 
-        public void Handle(ExecutionContext context, TEvent @event) =>
+        public void Handle(ExecutionContext context, TEvent @event)
+        {
+            context.Instance.SetDataObjectValue(context.Token.ExecutionPoint, @event);
+            _dataOutput?.Update(context, context.Token.ExecutionPoint, @event);
+
             HandleImpl(context, @event);
+        }
 
         protected virtual bool CanHandleImpl(ExecutionContext context, TEvent @event)
         {

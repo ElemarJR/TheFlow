@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TheFlow.CoreConcepts.Names;
 
 namespace TheFlow.CoreConcepts
 {
@@ -15,6 +16,7 @@ namespace TheFlow.CoreConcepts
         public IEnumerable<HistoryItem> History => _history;
 
         public IDictionary<string, object> EmbeddedDataStoresValues { get; }
+        public IDictionary<string, object> DataObjectsValues { get; }
 
 
         public void SetDataInputValue(
@@ -23,6 +25,16 @@ namespace TheFlow.CoreConcepts
         {
             var key = new DataInputOutputKey(elementName, inputName);
             _elementsState[key] = value;
+        }
+
+        public void SetDataObjectValue(DataObjectName dataObjectName, object value)
+        {
+            DataObjectsValues[dataObjectName.ToString()] = value;
+        }
+
+        public object GetDataObjectValue(DataObjectName dataObjectName)
+        {
+            return DataObjectsValues[dataObjectName.ToString()];
         }
     }
 }

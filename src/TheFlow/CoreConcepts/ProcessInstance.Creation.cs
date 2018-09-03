@@ -46,16 +46,28 @@ namespace TheFlow.CoreConcepts
             IEnumerable<HistoryItem> history,
             IDictionary<DataInputOutputKey, object> elementsState, 
             IDictionary<string, object> embeddedDataStoresValues
+        ) : this(processModelId, id, token, history, elementsState, embeddedDataStoresValues, null)
+        {
+        }
+
+        public ProcessInstance(
+            string processModelId,
+            string id,
+            Token token,
+            IEnumerable<HistoryItem> history,
+            IDictionary<DataInputOutputKey, object> elementsState, 
+            IDictionary<string, object> embeddedDataStoresValues,
+            IDictionary<string, object> dataObjectsValues
             )
         {
-            EmbeddedDataStoresValues = embeddedDataStoresValues;
-
+            
             ProcessModelId = processModelId;
             Id = id;
             Token = token ?? Token.Create();
             _history = history?.ToList() ?? new List<HistoryItem>();
             _elementsState = elementsState ?? new Dictionary<DataInputOutputKey, object>();
             EmbeddedDataStoresValues = embeddedDataStoresValues ?? new Dictionary<string, object>();
+            DataObjectsValues = dataObjectsValues ?? new Dictionary<string, object>(); 
         }
 
         public static ProcessInstance Create(string processModelId)

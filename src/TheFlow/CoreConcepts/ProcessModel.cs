@@ -33,13 +33,13 @@ namespace TheFlow.CoreConcepts
             Elements = elements;
             Associations = associations ?? ImmutableList.Create<Association>();
         }
-        
-//        
-//        public static readonly ProcessModel Empty = new ProcessModel(
-//            ImmutableList<IProcessElement<IElement>>.Empty
-//        );  
+
+        //        
+        //        public static readonly ProcessModel Empty = new ProcessModel(
+        //            ImmutableList<IProcessElement<IElement>>.Empty
+        //        );  
         #endregion
-        
+
         public IEnumerable<IProcessElement<IConnectionElement>> GetIncomingConnections(
             string elementName
         )

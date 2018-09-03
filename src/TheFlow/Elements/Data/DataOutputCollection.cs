@@ -20,7 +20,6 @@ namespace TheFlow.Elements.Data
             get { return _inner.First(i => i.Name == name); }
         }
 
-        
         public void Add(DataOutput item)
         {
             if (item == null)
@@ -59,7 +58,6 @@ namespace TheFlow.Elements.Data
 
         public int Count => _inner.Count;
         public bool IsReadOnly => false;
-
-
+        public DataOutput Default => this["default"];
     }
 }

@@ -7,7 +7,13 @@ namespace TheFlow.Tests.Functional.PickingProducts
     {
         public override void Run(ExecutionContext context)
         {
-            throw new System.NotImplementedException();
+            var productOrdered = (ProductOrdered) context.Instance
+                .GetDataObjectValue("ProductOrdered");
+
+            var result = productOrdered.ProductCode == "001";
+
+            SetDefaultOuputTo(context, result);
+            context.Instance.HandleActivityCompletion(context, result);
         }
     }
 }

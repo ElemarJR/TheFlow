@@ -4,6 +4,7 @@ using FluentAssertions;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
+using TheFlow.Infrastructure.Stores;
 using Xunit;
 
 namespace TheFlow.Tests.Unit
@@ -247,6 +248,8 @@ namespace TheFlow.Tests.Unit
             instance.Token.IsActive.Should().BeFalse();
 
         }
+
+        
 
         class Start {}
         class Middle1 {}

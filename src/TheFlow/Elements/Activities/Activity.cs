@@ -20,5 +20,10 @@ namespace TheFlow.Elements.Activities
 
         public DataInput GetDataInputByName(string name) 
             => Inputs.FirstOrDefault(i => i.Name == name);
+
+        protected void SetDefaultOuputTo(ExecutionContext context, object value)
+        {
+            Outputs.Default.Update(context, context.Token.ExecutionPoint, value);
+        }
     }
 }
