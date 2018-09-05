@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TheFlow.CoreConcepts.Names;
 
 namespace TheFlow.CoreConcepts
 {
@@ -27,14 +26,14 @@ namespace TheFlow.CoreConcepts
             _elementsState[key] = value;
         }
 
-        public void SetDataObjectValue(DataObjectName dataObjectName, object value)
+        public void SetDataObjectValue(string dataObjectName, object value)
         {
-            DataObjectsValues[dataObjectName.ToString()] = value;
+            DataObjectsValues[dataObjectName] = value;
         }
 
-        public object GetDataObjectValue(DataObjectName dataObjectName)
+        public object GetDataObjectValue(string dataObjectName)
         {
-            return DataObjectsValues[dataObjectName.ToString()];
+            return DataObjectsValues[dataObjectName];
         }
     }
 }

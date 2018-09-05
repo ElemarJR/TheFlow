@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using TheFlow.Conventions;
 using TheFlow.Elements;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Connections;
@@ -16,6 +17,9 @@ namespace TheFlow.CoreConcepts
         
         public ImmutableList<IProcessElement<IElement>> Elements { get; }
         public ImmutableList<Association> Associations { get; }
+
+        public ProcessModelConventions Conventions { get; }
+            = new ProcessModelConventions();
 
         #region Constructor and Empty Object
         public ProcessModel(

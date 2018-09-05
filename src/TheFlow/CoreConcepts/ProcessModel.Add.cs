@@ -21,7 +21,7 @@ namespace TheFlow.CoreConcepts
 
         public ProcessModel AddEventCatcher<TEvent>()
             where TEvent : class
-            => AddEventCatcher<TEvent>($"On{typeof(TEvent).Name}");
+            => AddEventCatcher<TEvent>(Conventions.Naming.EventCatcher(typeof(TEvent).Name));
 
         public ProcessModel AddEventCatcher<TEvent>(string name)
             where TEvent : class
@@ -104,14 +104,8 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddActivity<TActivity>()
             where TActivity : Activity
         {
-            var name = typeof(TActivity).Name;
-            if (name.EndsWith("Activity"))
-            {
-                name = name.Substring(0, name.Length - "Activity".Length);
-            }
-
             var activity = Activator.CreateInstance<TActivity>();
-            return AddActivity(name, activity);
+            return AddActivity(Conventions.Naming.ActivityName(typeof(TActivity).Name), activity);
         }
 
         public ProcessModel AddParallelGateway(string name)

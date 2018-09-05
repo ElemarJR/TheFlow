@@ -1,5 +1,4 @@
-﻿using System;
-using TheFlow.CoreConcepts;
+﻿using TheFlow.CoreConcepts;
 using TheFlow.Elements.Data;
 
 namespace TheFlow.Elements.Events
@@ -13,7 +12,9 @@ namespace TheFlow.Elements.Events
 
         void IEventCatcher.Handle(ExecutionContext context, object @event)
         {
-            context.Instance.SetDataObjectValue(context.Token.ExecutionPoint, @event);
+            context.Instance.SetDataObjectValue(
+                context.Model.Conventions.Naming.DataObjectName(context.Token.ExecutionPoint),
+                @event);
             _dataOutput?.Update(context, context.Token.ExecutionPoint, @event);
 
             HandleImpl(context, @event as TEvent);
@@ -30,7 +31,10 @@ namespace TheFlow.Elements.Events
 
         public void Handle(ExecutionContext context, TEvent @event)
         {
-            context.Instance.SetDataObjectValue(context.Token.ExecutionPoint, @event);
+            context.Instance.SetDataObjectValue(
+                context.Model.Conventions.Naming.DataObjectName(context.Token.ExecutionPoint),
+                @event
+                );
             _dataOutput?.Update(context, context.Token.ExecutionPoint, @event);
 
             HandleImpl(context, @event);
