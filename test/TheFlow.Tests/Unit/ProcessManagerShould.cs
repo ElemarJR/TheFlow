@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
@@ -164,6 +163,43 @@ namespace TheFlow.Tests.Unit
             Action sut = () => manager2.HandleActivityCompletion(result.ProcessInstanceId, Guid.NewGuid(), null);
 
             sut.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void HandlingAnEventThatContinuesWithAnotherEventReturnsAnToken()
+        {
+            var model = ProcessModel.Create()
+                .AddEventCatcher("OnStart")
+                .AddEventCatcher("OnEvt1")
+                .AddEventCatcher("OnEvt2")
+                .AddEventThrower("End")
+                .AddSequenceFlow("OnStart", "OnEvt1", "OnEvt2", "End");
+
+            var manager = new ProcessManager(
+                new InMemoryProcessModelsStore(model),
+                new InMemoryProcessInstancesStore()
+                );
+
+            var e = manager.HandleEvent(null).First();
+
+            var result = manager.HandleEvent(
+                e.ProcessInstanceId, e.AffectedTokens.First(), null
+                );
+
+            result.AffectedTokens.Should().ContainInOrder(e.AffectedTokens);
+            result.ProcessInstanceId.Should().Be(e.ProcessInstanceId);
+        }
+
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenTryingToHandleFailureOfNonExistentInstance()
+        {
+            var manager = new ProcessManager(
+                new InMemoryProcessModelsStore(),
+                new InMemoryProcessInstancesStore() 
+                );
+
+            Action a = () => manager.HandleActivityFailure(Guid.NewGuid(), Guid.Empty, null);
+            a.Should().Throw<InvalidOperationException>();
         }
     }
 }

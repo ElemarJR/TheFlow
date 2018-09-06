@@ -6,7 +6,7 @@ using TheFlow.Infrastructure.Parallel;
 using TheFlow.Infrastructure.Stores;
 using Xunit;
 
-namespace TheFlow.Tests.Functional
+namespace TheFlow.Tests.Functional.Basics
 {
     public class RunningTwoPathsInParallel
     {

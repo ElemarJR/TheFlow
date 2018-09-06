@@ -1,13 +1,10 @@
-using System;
-using System.Diagnostics;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using TheFlow.CoreConcepts;
 using TheFlow.Elements.Activities;
 using TheFlow.Elements.Events;
 using Xunit;
 
-namespace TheFlow.Tests.Functional
+namespace TheFlow.Tests.Functional.Basics
 {
     public class HelloWorld
     {

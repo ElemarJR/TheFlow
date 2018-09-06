@@ -108,6 +108,13 @@ namespace TheFlow.CoreConcepts
             return AddActivity(Conventions.Naming.ActivityName(typeof(TActivity).Name), activity);
         }
 
+        public ProcessModel AddActivity<TActivity>(string name)
+            where TActivity : Activity
+        {
+            var activity = Activator.CreateInstance<TActivity>();
+            return AddActivity(name, activity);
+        }
+
         public ProcessModel AddParallelGateway(string name)
             => AddElement(NamedProcessElement<ParallelGateway>.Create(name, new ParallelGateway()));
 

@@ -124,7 +124,29 @@ namespace TheFlow
             object failureData
         )
         {
-            throw new NotImplementedException();
+            var instance = InstancesStore.GetById(processInstanceId);
+            if (instance == null)
+            {
+                throw new InvalidOperationException("Instance not found.");
+            }
+
+            var model = ModelsStore.GetById(Guid.Parse(instance.ProcessModelId));
+            if (model == null)
+            {
+                throw new InvalidOperationException("Instance process model not found.");
+            }
+
+            var context = new ExecutionContext(this, model, instance, instance.Token.FindById(tokenId), null);
+
+            var tokens = instance.HandleActivityFailure(context, failureData);
+
+            InstancesStore.Store(instance);
+
+            return new HandleResult(
+                Guid.Parse(model.Id),
+                Guid.Parse(instance.Id),
+                tokens.Select(token => token.Id).ToList()
+            );
         }
 
         public HandleResult HandleActivityCompletion(
