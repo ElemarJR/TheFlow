@@ -45,7 +45,7 @@ namespace TheFlow
 
             foreach (var model in models)
             {
-                
+
                 var instance = ProcessInstance.Create(Guid.Parse(model.Id));
                 var context = new ExecutionContext(this, model, instance, instance.Token, null);
 

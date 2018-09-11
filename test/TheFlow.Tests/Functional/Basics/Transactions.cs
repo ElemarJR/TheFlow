@@ -20,7 +20,7 @@ namespace TheFlow.Tests.Functional.Basics
                 .AddActivity("compensation", () => data -= 5)
                 .AttachAsCompensationActivity("compensation", "regular")
                 .AddActivity("failing", () => throw new Exception())
-                .AddEventCatcher("end")
+                .AddEventThrower("end")
                 .AddSequenceFlow("start", "regular", "failing", "end");
 
             var models = new InMemoryProcessModelsStore(model);
@@ -42,7 +42,7 @@ namespace TheFlow.Tests.Functional.Basics
                 .AddActivity("compensation", () => data -= 5)
                 .AttachAsCompensationActivity("compensation", "regular")
                 .AddActivity<ManualActivity>("failing")
-                .AddEventCatcher("end")
+                .AddEventThrower("end")
                 .AddSequenceFlow("start", "regular", "failing", "end");
 
             var models = new InMemoryProcessModelsStore(model);
