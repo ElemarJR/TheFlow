@@ -129,7 +129,7 @@ namespace TheFlow.CoreConcepts
             => AddElement(ProcessElement<SequenceFlow>.Create(SequenceFlow.Create(@from, @to, filterValue)));
 
         private ProcessModel AddElement(IProcessElement<IElement> element)
-            => new ProcessModel(Id, Version + 1, Elements.Add(element), Associations);
+            => new ProcessModel(Guid.NewGuid().ToString(), Version + 1, Elements.Add(element), Associations);
 
         // TODO: Ensure that COMPENSATION has no incoming or outcoming sequence flow 
         public ProcessModel AttachAsCompensationActivity(string compensation, string to)
@@ -151,7 +151,7 @@ namespace TheFlow.CoreConcepts
             var ifname = $"__compensation_if_{to}_was_completed__";
             var endifname = $"__compensation_endif_{to}_was_completed__";
 
-            return new ProcessModel(Id, that.Version + 1, that.Elements, that.Associations.Add(new Association(
+            return new ProcessModel(Guid.NewGuid().ToString(), that.Version + 1, that.Elements, that.Associations.Add(new Association(
                     compensation,
                     to,
                     AssociationType.Compensation
