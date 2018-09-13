@@ -17,7 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "other\Playgro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFlow.Infrastructure.Stores.InstancesStore.RavenDB", "src\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB\TheFlow.Infrastructure.Stores.InstancesStore.RavenDB.csproj", "{E1B19CB3-3AD4-425F-A6DD-A178989C3081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFlow.Bpmn", "src\TheFlow.Bpmn\TheFlow.Bpmn.csproj", "{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFlow.Bpmn", "src\TheFlow.Bpmn\TheFlow.Bpmn.csproj", "{D6F2FB84-AA26-452C-BEB8-B641A8EC7759}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{911DC34B-8485-4741-82A6-FED97862926D}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		Build.ps1 = Build.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

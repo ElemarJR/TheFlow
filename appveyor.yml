@@ -1,4 +1,6 @@
 version: 0.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
 image: Visual Studio 2017
 environment:
   COVERALLS_REPO_TOKEN:
@@ -6,18 +8,25 @@ environment:
 install:
   - git submodule update --init --recursive
   - nuget restore TheFlow.sln
-build:
-  project: TheFlow.sln
-  verbosity: minimal
+nuget:
+  disable_publish_on_pr: true
 
-test_script:
-  - > 
-      %userprofile%\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe 
-      -target:"c:\program files\dotnet\dotnet.exe" "-targetargs:test test\TheFlow.Tests\TheFlow.Tests.csproj --configuration Debug --no-build" 
-      -filter:"+[*]* -[*.Tests*]*" 
-      -register:user 
-      -oldStyle -output:"test\coverage.xml"
+build_script:
+- ps: .\Build.ps1
+test: off
+artifacts:
+- path: .\src\TheFlow\artifacts\**\*.nupkg
+  name: NuGet
 
-after_test:
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/theflow/api/v2/package
+  api_key:
+    secure: iZUoXnTZY4wvq3PH7R9c8dkea0EzfwL/IkX4QA/5GbzR+t9nv0SFrmh6LlUKv0us
+  skip_symbols: true
+  on:
+    branch: master
+
+after_build:
   - >
       %userprofile%\.nuget\packages\coveralls.io\1.4.2\tools\coveralls.net.exe --opencover test/coverage.xml -r  %COVERALLS_REPO_TOKEN%
