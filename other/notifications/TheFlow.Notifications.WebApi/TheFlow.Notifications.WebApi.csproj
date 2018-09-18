@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\HealthChecks\src\Microsoft.AspNetCore.HealthChecks\Microsoft.AspNetCore.HealthChecks.csproj" />
     <ProjectReference Include="..\..\..\external\HealthChecks\src\Microsoft.Extensions.HealthChecks\Microsoft.Extensions.HealthChecks.csproj" />
-    <ProjectReference Include="..\TheFlow.Notifications.Application\TheFlow.Notifications.Application.csproj" />
   </ItemGroup>
 
 </Project>

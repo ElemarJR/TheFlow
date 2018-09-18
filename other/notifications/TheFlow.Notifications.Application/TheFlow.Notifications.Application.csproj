@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>B</AssemblyName>
+    <AssemblyName>TheFlow.Notifications.Application</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
