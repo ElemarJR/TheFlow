@@ -17,6 +17,7 @@ function Exec
         [Parameter(Position=1,Mandatory=0)][string]$errorMessage = ($msgs.error_bad_command -f $cmd)
     )
     & $cmd
+
     if ($lastexitcode -ne 0) {
         throw ("Exec: " + $errorMessage)
     }
@@ -37,7 +38,7 @@ echo "build: Build version suffix is $buildSuffix"
 
 exec { & dotnet build TheFlow.Core.sln -c Release --version-suffix=$buildSuffix }
 
-exec { & $opencover -target:"c:\program files\dotnet\dotnet.exe" -targetargs:"test .\test\TheFlow.Tests\TheFlow.Tests.csproj --configuration Debug --no-build" -filter:"+[*]* -[*.Tests*]*" -register:user -oldStyle -output:".\test\coverage.xml"}
+exec { & $opencover -target:"c:\program files\dotnet\dotnet.exe" -targetargs:"test .\test\TheFlow.Tests\TheFlow.Tests.csproj --configuration Debug" -filter:"+[*]* -[*.Tests*]*" -returntargetcode:0 -register:user -oldStyle -output:".\coverage.xml"}
 
 exec { & dotnet pack .\src\TheFlow\TheFlow.csproj -c Release -o .\artifacts --include-symbols --no-build $versionSuffix }
 
