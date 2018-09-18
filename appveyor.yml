@@ -1,7 +1,8 @@
-version: 0.0.{build}
+version: "0.0.1.{build}"
 pull_requests:
   do_not_increment_build_number: true
 image: Visual Studio 2017
+
 environment:
   COVERALLS_REPO_TOKEN:
     secure: EpNdzj3IQUSrXiz0O1EGjAwPV5AhZJy1XovtymuCMqIYbj3ziJAY1OcjRwfkt5DG
@@ -10,6 +11,15 @@ install:
   - nuget restore TheFlow.sln
 nuget:
   disable_publish_on_pr: true
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
 
 build_script:
 - ps: .\Build.ps1
