@@ -32,6 +32,7 @@ $commitHash = $(git rev-parse --short HEAD)
 $buildSuffix = @{ $true = "$($suffix)-$($commitHash)"; $false = "$($branch)-$($commitHash)" }[$suffix -ne ""]
 $versionSuffix = @{ $true = "--version-suffix=$($suffix)"; $false = ""}[$suffix -ne ""]
 $opencover=$env:userprofile + '\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe'
+$version=
 
 echo "build: Package version suffix is $suffix"
 echo "build: Build version suffix is $buildSuffix" 

@@ -28,5 +28,6 @@
     <PackageLicenseUrl>https://github.com/elemarjr/theflow/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git://github.com/elemarjr/theflow</RepositoryUrl>
+    <Version>0.0.1</Version>
   </PropertyGroup>
 </Project>
