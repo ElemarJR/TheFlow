@@ -4,7 +4,7 @@ using TheFlow.Elements.Activities;
 
 namespace SimpleSaga
 {
-    public class CompensatingActivity1 : Activity
+    public class CompensatoryActivity1 : Activity
     {
         public override void Run(ExecutionContext context)
         {
