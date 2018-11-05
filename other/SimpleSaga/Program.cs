@@ -1,4 +1,5 @@
-﻿using TheFlow;
+﻿using System;
+using TheFlow;
 using TheFlow.CoreConcepts;
 using TheFlow.Infrastructure.Stores;
 
@@ -11,7 +12,7 @@ namespace SimpleSaga
             var models = new InMemoryProcessModelsStore();
             var instances = new InMemoryProcessInstancesStore();
 
-            var model = ProcessModel.Create()
+            var model = ProcessModel.Create(Guid.Parse("a12637a3-72de-4774-b60c-d98310438c26"))
                 .AddEventCatcher<StartEvent>()
                 .AddActivity<Activity1>()
                 .AddActivity<CompensatingActivity1>()
