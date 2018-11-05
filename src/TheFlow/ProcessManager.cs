@@ -119,6 +119,17 @@ namespace TheFlow
         }
 
         public HandleResult HandleActivityFailure(
+            string processInstanceId,
+            Guid tokenId,
+            object failureData
+        ) => HandleActivityFailure(
+            Guid.Parse(processInstanceId),
+            tokenId,
+            failureData
+        );
+
+
+        public HandleResult HandleActivityFailure(
             Guid processInstanceId,
             Guid tokenId,
             object failureData
@@ -148,6 +159,16 @@ namespace TheFlow
                 tokens.Select(token => token.Id).ToList()
             );
         }
+
+        public HandleResult HandleActivityCompletion(
+            string processInstanceId,
+            Guid tokenId,
+            object completionData
+        ) => HandleActivityCompletion(
+            Guid.Parse(processInstanceId),
+            tokenId,
+            completionData
+        );
 
         public HandleResult HandleActivityCompletion(
             Guid processInstanceId, 
