@@ -30,9 +30,8 @@ artifacts:
 
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/TheFlow/api/v2/package
   api_key:
-    secure: iZUoXnTZY4wvq3PH7R9c8dkea0EzfwL/IkX4QA/5GbzR+t9nv0SFrmh6LlUKv0us
+    secure: NKrMxQUn7fqteI+uf4gFMpitYZPVX4H1fAkzAJQA+SYl6dnhyu3VyZLufigRJBZp
   skip_symbols: true
   on:
     branch: master
