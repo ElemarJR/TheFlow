@@ -14,7 +14,7 @@ namespace TheFlow.Tests.Functional.Basics
         {
             var output = false;
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddExclusiveGateway("If")
                 .AddActivity("True", () => output = true)
                 .AddActivity("False", () => output = false)

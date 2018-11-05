@@ -13,17 +13,17 @@ namespace TheFlow.CoreConcepts
         public ProcessModel AddNullElement(string name, NullElement n)
             => AddElement(NamedProcessElement<NullElement>.Create(name, n));
 
-        public ProcessModel AddEventCatcher(string name)
+        public ProcessModel AddAnyEventCatcher(string name)
             => AddEventCatcher(name, CatchAnyEventCatcher.Create());
 
         public ProcessModel AddEventCatcher(string name, IEventCatcher catcher)
             => AddEventCatcher(NamedProcessElement<IEventCatcher>.Create(name, catcher));
 
-        public ProcessModel AddEventCatcher<TEvent>()
+        public ProcessModel AddEventCatcherFor<TEvent>()
             where TEvent : class
-            => AddEventCatcher<TEvent>(Conventions.Naming.EventCatcher(typeof(TEvent).Name));
+            => AddEventCatcherFor<TEvent>(Conventions.Naming.EventCatcher(typeof(TEvent).Name));
 
-        public ProcessModel AddEventCatcher<TEvent>(string name)
+        public ProcessModel AddEventCatcherFor<TEvent>(string name)
             where TEvent : class
         {
             var eventCatcher = new TypedEventCatcher<TEvent>();

@@ -52,7 +52,7 @@ namespace TheFlow.Tests.Unit
         public void ThrowArgumentExceptionWhenTryingToAttachInstanceWithUnrecognizedModel()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddEventThrower("end");
             
             var manager = new ProcessManager(
@@ -169,9 +169,9 @@ namespace TheFlow.Tests.Unit
         public void HandlingAnEventThatContinuesWithAnotherEventReturnsAnToken()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("OnStart")
-                .AddEventCatcher("OnEvt1")
-                .AddEventCatcher("OnEvt2")
+                .AddAnyEventCatcher("OnStart")
+                .AddAnyEventCatcher("OnEvt1")
+                .AddAnyEventCatcher("OnEvt2")
                 .AddEventThrower("End")
                 .AddSequenceFlow("OnStart", "OnEvt1", "OnEvt2", "End");
 

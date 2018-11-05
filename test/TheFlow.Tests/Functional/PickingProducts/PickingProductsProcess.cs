@@ -11,7 +11,7 @@ namespace TheFlow.Tests.Functional.PickingProducts
         public static ProcessModel CreateModel()
         {
             return ProcessModel.Create()
-                .AddEventCatcher<ProductOrdered>()
+                .AddEventCatcherFor<ProductOrdered>()
                 .AddActivity<CheckStockActivity>()
                 .AddExclusiveGateway("InStock?")
                 .AddSequenceFlow("OnProductOrdered", "CheckStock", "InStock?")

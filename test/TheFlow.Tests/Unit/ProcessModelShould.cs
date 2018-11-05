@@ -134,7 +134,7 @@ namespace TheFlow.Tests.Unit
         public void AddEventCatcherShouldCreateDefaultHandlerWhenItIsNotSpecified()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start");
+                .AddAnyEventCatcher("start");
 
             var element = model.GetElementByName("start")?.Element;
             element.Should().BeOfType<CatchAnyEventCatcher>();
@@ -161,7 +161,7 @@ namespace TheFlow.Tests.Unit
         public void AddingEventCatcherOnlyWithTypeCreatesAnElementWithLogicalName()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher<ProductOrdered>();
+                .AddEventCatcherFor<ProductOrdered>();
 
             model.GetElementByName("OnProductOrdered").Should().NotBeNull();
         }

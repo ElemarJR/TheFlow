@@ -14,7 +14,7 @@ namespace TheFlow.Tests.Unit
         public void PauseTheExecutionOfTheProcess()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("activity", new UserActivity())
                 .AddEventThrower("end")
                 .AddSequenceFlow("start", "activity", "end");

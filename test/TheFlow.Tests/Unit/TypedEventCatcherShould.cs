@@ -14,7 +14,7 @@ namespace TheFlow.Tests.Unit
         public void SaveEventDataAsDataObject(object data)
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher<string>("OnMessageReceived")
+                .AddEventCatcherFor<string>("OnMessageReceived")
                 .AddEventThrower("GoodBye", SilentEventThrower.Instance)
                 .AddSequenceFlow("OnMessageReceived", "GoodBye");
 

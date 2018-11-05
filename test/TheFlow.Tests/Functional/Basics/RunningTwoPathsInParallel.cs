@@ -22,7 +22,7 @@ namespace TheFlow.Tests.Functional.Basics
             var lockObject = new object();
             
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("msgBefore", () => { e0 = op++;}) // 0+1
                 .AddParallelGateway("split")
                 .AddSequenceFlow("start", "msgBefore", "split")
@@ -53,14 +53,14 @@ namespace TheFlow.Tests.Functional.Basics
         public void ReturnTwoTokensWhenThereAreEventHandlersInBothPaths()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("msgBefore", () => { })
                 .AddParallelGateway("split")
                 .AddSequenceFlow("start", "msgBefore", "split")
                 .AddActivity("msgLeft", () => { })
-                .AddEventCatcher("evtLeft")
+                .AddAnyEventCatcher("evtLeft")
                 .AddActivity("msgRight", () => { })
-                .AddEventCatcher("evtRight")
+                .AddAnyEventCatcher("evtRight")
                 .AddParallelGateway("join")
                 .AddSequenceFlow("split", "msgLeft", "evtLeft", "join")
                 .AddSequenceFlow("split", "msgRight", "evtRight", "join")
@@ -81,12 +81,12 @@ namespace TheFlow.Tests.Functional.Basics
         public void ReturnOneTokenWhenThereIsAnEventHandlerInOneOfThePaths()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("msgBefore", () => { })
                 .AddParallelGateway("split")
                 .AddSequenceFlow("start", "msgBefore", "split")
                 .AddActivity("msgLeft", () => { })
-                .AddEventCatcher("evtLeft")
+                .AddAnyEventCatcher("evtLeft")
                 .AddActivity("msgRight", () => { })
                 .AddParallelGateway("join")
                 .AddSequenceFlow("split", "msgLeft", "evtLeft", "join")

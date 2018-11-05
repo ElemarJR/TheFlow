@@ -12,7 +12,7 @@ namespace TheFlow.Tests.Unit.Validations
         public void AcceptModelsWhenAllActivitiesHaveOutcomingConnections()
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("none", () => { })
                 .AddEventThrower("end")
                 .AddSequenceFlow("start",  "none" , "end");
@@ -27,7 +27,7 @@ namespace TheFlow.Tests.Unit.Validations
         public void RejectModelsWhenOneActivityHasNoOutcomingConnections(string activityName)
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity(activityName, () => { })
                 .AddEventThrower("end")
                 .AddSequenceFlow("start", "end");
@@ -45,7 +45,7 @@ namespace TheFlow.Tests.Unit.Validations
         public void RejectModelsWhenOneEventCatcherHasNoOutcomingConnections(string catcherName)
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher(catcherName)
+                .AddAnyEventCatcher(catcherName)
                 .AddEventThrower("end")
                 .AddSequenceFlow("start", "end");
 

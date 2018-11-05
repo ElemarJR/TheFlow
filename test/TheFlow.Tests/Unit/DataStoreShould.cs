@@ -17,7 +17,7 @@ namespace TheFlow.Tests.Unit
             )
         {
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddEventThrower("end")
                 .AddSequenceFlow("start", "end")
                 .AddDataStore<string>("data");

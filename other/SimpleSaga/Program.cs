@@ -10,7 +10,7 @@ namespace SimpleSaga
         static void Main(string[] args)
         {
             var model = ProcessModel.Create(Guid.Parse("a12637a3-72de-4774-b60c-d98310438c26"))
-                .AddEventCatcher<StartEvent>()
+                .AddEventCatcherFor<StartEvent>()
                 .AddActivity<Activity1>()
                 .AddActivity<CompensatoryActivity1>()
                 .AttachAsCompensationActivity("CompensatingActivity1", "Activity1")
@@ -26,7 +26,6 @@ namespace SimpleSaga
                     "End");
 
             ProcessManagerHolder.Instance.ModelsStore.Store(model);
-
 
             ProcessManagerHolder.Instance.HandleEvent(new StartEvent());
         }

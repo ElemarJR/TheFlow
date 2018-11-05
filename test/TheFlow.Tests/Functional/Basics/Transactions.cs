@@ -15,7 +15,7 @@ namespace TheFlow.Tests.Functional.Basics
         {
             var data = 0;
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("regular", () => data = 10)
                 .AddActivity("compensation", () => data -= 5)
                 .AttachAsCompensationActivity("compensation", "regular")
@@ -37,7 +37,7 @@ namespace TheFlow.Tests.Functional.Basics
         {
             var data = 0;
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("regular", () => data = 10)
                 .AddActivity("compensation", () => data -= 5)
                 .AttachAsCompensationActivity("compensation", "regular")
@@ -68,7 +68,7 @@ namespace TheFlow.Tests.Functional.Basics
             var e3 = false;
 
             var model = ProcessModel.Create()
-                .AddEventCatcher("start")
+                .AddAnyEventCatcher("start")
                 .AddActivity("a1", () => { })
                 .AddActivity("c1", () => e1 = true)
                 .AttachAsCompensationActivity("c1", "a1")
