@@ -9,16 +9,13 @@ namespace SimpleSaga
     {
         static void Main(string[] args)
         {
-            var models = new InMemoryProcessModelsStore();
-            var instances = new InMemoryProcessInstancesStore();
-
             var model = ProcessModel.Create(Guid.Parse("a12637a3-72de-4774-b60c-d98310438c26"))
                 .AddEventCatcher<StartEvent>()
                 .AddActivity<Activity1>()
-                .AddActivity<CompensatingActivity1>()
+                .AddActivity<CompensatoryActivity1>()
                 .AttachAsCompensationActivity("CompensatingActivity1", "Activity1")
                 .AddActivity<Activity2>()
-                .AddActivity<CompensatingActivity2>()
+                .AddActivity<CompensatoryActivity2>()
                 .AttachAsCompensationActivity("CompensatingActivity2", "Activity2")
                 .AddActivity<Activity3>()
                 .AddEventThrower<EndEventThrower>()
@@ -28,11 +25,10 @@ namespace SimpleSaga
                     "Activity3", 
                     "End");
 
-            models.Store(model);
+            ProcessManagerHolder.Instance.ModelsStore.Store(model);
 
-            var processManager = new ProcessManager(models, instances);
 
-            processManager.HandleEvent(new StartEvent());
+            ProcessManagerHolder.Instance.HandleEvent(new StartEvent());
         }
     }
 }

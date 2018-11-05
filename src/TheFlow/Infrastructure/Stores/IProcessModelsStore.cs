@@ -9,5 +9,6 @@ namespace TheFlow.Infrastructure.Stores
     {
         ProcessModel GetById(Guid id);
         IEnumerable<ProcessModel> GetAll();
+        void Store(ProcessModel model);
     }
 }
