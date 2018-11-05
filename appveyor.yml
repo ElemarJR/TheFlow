@@ -8,7 +8,7 @@ environment:
     secure: EpNdzj3IQUSrXiz0O1EGjAwPV5AhZJy1XovtymuCMqIYbj3ziJAY1OcjRwfkt5DG
 install:
   - git submodule update --init --recursive
-  - nuget restore TheFlow.sln
+  - nuget restore TheFlow.Core.sln
 nuget:
   disable_publish_on_pr: true
 
@@ -30,7 +30,7 @@ artifacts:
 
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/theflow/api/v2/package
+  server: https://www.myget.org/F/TheFlow/api/v2/package
   api_key:
     secure: iZUoXnTZY4wvq3PH7R9c8dkea0EzfwL/IkX4QA/5GbzR+t9nv0SFrmh6LlUKv0us
   skip_symbols: true
