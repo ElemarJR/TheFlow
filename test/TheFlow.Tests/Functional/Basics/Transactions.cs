@@ -32,6 +32,46 @@ namespace TheFlow.Tests.Functional.Basics
             data.Should().Be(5);
         }
 
+        public static int SharedState = 0;
+        class RegularActivity : Activity
+        {
+            public override void Run(ExecutionContext context)
+            {
+                SharedState = 10;
+                context.Instance.HandleActivityCompletion(context, null);
+            }
+        }
+
+        class CompensationActivity : Activity
+        {
+            public override void Run(ExecutionContext context)
+            {
+                SharedState -= 5;
+                context.Instance.HandleActivityCompletion(context, null);
+            }
+        }
+
+        [Fact]
+        public void WhenTheProcessFailsCompensationActivitiesRun2()
+        {
+            var model = ProcessModel.Create()
+                .AddAnyEventCatcher("start")
+                .AddActivityWithCompensation<RegularActivity, CompensationActivity>()
+                .AddActivity("failing", () => throw new Exception())
+                .AddEventThrower("end")
+                .AddSequenceFlow("start", "Regular", "failing", "end");
+
+            var models = new InMemoryProcessModelsStore(model);
+            var instances = new InMemoryProcessInstancesStore();
+
+            var manager = new ProcessManager(models, instances);
+
+            manager.HandleEvent(null);
+            SharedState.Should().Be(5);
+        }
+
+
+
         [Fact]
         public void WhenManualActivityFailsCompensationActivitiesRun()
         {

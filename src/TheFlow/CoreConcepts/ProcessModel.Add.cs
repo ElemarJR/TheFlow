@@ -108,6 +108,19 @@ namespace TheFlow.CoreConcepts
             return AddActivity(Conventions.Naming.ActivityName(typeof(TActivity).Name), activity);
         }
 
+        public ProcessModel AddActivityWithCompensation<TActivity, TCompensation>()
+            where TActivity : Activity
+            where TCompensation : Activity
+        {
+            var nameOfActivity = Conventions.Naming.ActivityName(typeof(TActivity).Name);
+            var nameOfCompensation = Conventions.Naming.ActivityName(typeof(TCompensation).Name);
+
+            return this
+                .AddActivity<TActivity>()
+                .AddActivity<TCompensation>()
+                .AttachAsCompensationActivity(nameOfCompensation, nameOfActivity);
+        }
+
         public ProcessModel AddActivity<TActivity>(string name)
             where TActivity : Activity
         {

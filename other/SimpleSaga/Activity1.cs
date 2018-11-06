@@ -13,15 +13,19 @@ namespace SimpleSaga
 
             if (!(response.KeyChar == 'Y' || response.KeyChar == 'y'))
             {
-                context
-                    .Instance
-                    .HandleActivityFailure(context, "failed to run activity 1");
+                ProcessManagerHolder.Instance.HandleActivityCompletion(
+                    context.Instance.Id,
+                    context.Token.Id,
+                    null
+                );
             }
             else
             {
-                context
-                    .Instance
-                    .HandleActivityCompletion(context, null);
+                ProcessManagerHolder.Instance.HandleActivityFailure(
+                    context.Instance.Id,
+                    context.Token.Id,
+                    null
+                );
             }
         }
     }
