@@ -18,13 +18,18 @@
             Element = element;
         }
 
-        public static NamedProcessElement<T> Create(
+        
+    }
+
+    public static class ProcessElement 
+    {
+        public static NamedProcessElement<T> Create<T>(
             string name,
             T element
-        ) => NamedProcessElement<T>.Create(name, element);
+        ) where T : IElement => NamedProcessElement<T>.Create(name, element);
 
-        public static UnnamedProcessElement<T> Create(
+        public static UnnamedProcessElement<T> Create<T>(
             T element
-        ) => UnnamedProcessElement<T>.Create(element);
+        ) where T : IElement => UnnamedProcessElement<T>.Create(element);
     }
 }

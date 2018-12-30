@@ -90,13 +90,13 @@ namespace TheFlow.CoreConcepts
 
 
         public ProcessModel AddSequenceFlow(SequenceFlow sequenceFlow)
-            => AddSequenceFlow(ProcessElement<SequenceFlow>.Create(sequenceFlow));
+            => AddSequenceFlow(ProcessElement.Create(sequenceFlow));
 
         public ProcessModel AddSequenceFlow(ProcessElement<SequenceFlow> sequenceFlow)
             => AddElement(sequenceFlow);
 
         public ProcessModel AddActivity(string name, Activity activity)
-            => AddElement(ProcessElement<Activity>.Create(name, activity));
+            => AddElement(ProcessElement.Create(name, activity));
 
         public ProcessModel AddActivity(NamedProcessElement<Activity> activity)
             => AddElement(activity);
@@ -139,7 +139,7 @@ namespace TheFlow.CoreConcepts
 
 
         public ProcessModel AddConditionalSequenceFlow(string @from, string @to, object filterValue)
-            => AddElement(ProcessElement<SequenceFlow>.Create(SequenceFlow.Create(@from, @to, filterValue)));
+            => AddElement(ProcessElement.Create(SequenceFlow.Create(@from, @to, filterValue)));
 
         private ProcessModel AddElement(IProcessElement<IElement> element)
             => new ProcessModel(Guid.NewGuid().ToString(), Version + 1, Elements.Add(element), Associations);
@@ -185,7 +185,7 @@ namespace TheFlow.CoreConcepts
 
         public ProcessModel AddDataStore<T>(string name)
         {
-            return AddElement(ProcessElement<EmbeddedDataStore<T>>.Create(
+            return AddElement(ProcessElement.Create(
                 name,
                 element: new EmbeddedDataStore<T>(name))
             );
